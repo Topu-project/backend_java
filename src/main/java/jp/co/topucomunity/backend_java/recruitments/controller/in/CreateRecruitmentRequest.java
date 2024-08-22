@@ -3,12 +3,14 @@ package jp.co.topucomunity.backend_java.recruitments.controller.in;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@Builder
 public class CreateRecruitmentRequest {
 
     private RecruitmentCategories recruitmentCategories;

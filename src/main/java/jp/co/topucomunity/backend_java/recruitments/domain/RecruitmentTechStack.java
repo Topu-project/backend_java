@@ -6,17 +6,18 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecruitmentTechStack {
+public class RecruitmentTechStack extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Recruitment recruitment;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private TechStack techStack;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Recruitment recruitment;
 
     private RecruitmentTechStack(TechStack techStack, Recruitment recruitment) {
         this.techStack = techStack;
@@ -26,4 +27,10 @@ public class RecruitmentTechStack {
     public static RecruitmentTechStack from(TechStack techStack, Recruitment recruitment) {
         return new RecruitmentTechStack(techStack, recruitment);
     }
+
+    public void makeRelationship(TechStack techStack, Recruitment recruitment) {
+        techStack.makeRelationship(this);
+        recruitment.makeRelationshipWithRecruitmentTechStack(this);
+    }
+
 }

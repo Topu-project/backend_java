@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TechStack {
+public class TechStack extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +21,15 @@ public class TechStack {
     @OneToMany(mappedBy = "techStack")
     private List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
 
-    public void addRecruitmentTechStack(RecruitmentTechStack techStack) {
-        recruitmentTechStacks.add(techStack);
-    }
-
     private TechStack(String technologyName) {
         this.technologyName = technologyName;
     }
 
     public static TechStack of(String technologyName) {
         return new TechStack(technologyName);
+    }
+
+    public void makeRelationship(RecruitmentTechStack recruitmentTechStack) {
+        this.recruitmentTechStacks.add(recruitmentTechStack);
     }
 }
