@@ -7,5 +7,12 @@ import java.util.Optional;
 
 public interface TechStacksRepository extends JpaRepository<TechStack, Long> {
 
+    /**
+     * expect
+     *
+     * select *
+     * from tech_stack ts
+     * where ts.technology_name = ?
+     */
     Optional<TechStack> findByTechnologyName(String technologyName);
 }
