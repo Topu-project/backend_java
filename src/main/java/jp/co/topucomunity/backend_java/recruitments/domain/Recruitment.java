@@ -5,12 +5,14 @@ import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recruitment extends BaseEntity {

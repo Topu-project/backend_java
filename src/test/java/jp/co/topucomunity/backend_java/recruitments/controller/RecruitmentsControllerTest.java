@@ -16,8 +16,10 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -62,6 +64,7 @@ class RecruitmentsControllerTest {
 
     }
 
+    @Transactional
     @DisplayName("응모ID로 해당 응모 상세페이지를 조회 할 수 있다.")
     @Test
     void getRecruitmentById() throws Exception {
@@ -78,7 +81,7 @@ class RecruitmentsControllerTest {
                 .contract("test@tesc.om")
                 .subject("끝내주는 서비스를 개발 해 봅시다.")
                 .content("사실은 윈도우앱")
-                .recruitmentTechStacks(List.of())
+                .recruitmentTechStacks(new ArrayList<>())
                 .build();
         var recruitmentPosition = RecruitmentPosition.from(position, recruitment);
         var recruitmentTechStack = RecruitmentTechStack.from(techStack, recruitment);
@@ -87,22 +90,21 @@ class RecruitmentsControllerTest {
 
         recruitmentsRepository.save(recruitment);
 
-        // when
-        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/:id", recruitmentId)
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/{recruitmentId}", recruitmentId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpectAll(
-                        jsonPath("$.id", is(recruitmentId)),
+                        jsonPath("$.id", is(1)),
                         jsonPath("$.recruitmentCategories", is("STUDY")),
                         jsonPath("$.progressMethods", is("ALL")),
-                        jsonPath("$.recruitmentDeadLine", is("2024-10-30")),
+                        jsonPath("$.recruitmentDeadline", is("2024-10-30")),
                         jsonPath("$.contract", is("test@tesc.om")),
                         jsonPath("$.subject", is("끝내주는 서비스를 개발 해 봅시다.")),
                         jsonPath("$.content", is("사실은 윈도우앱")),
-                        jsonPath("$.techStacks.[0].name", is("Java")),
-                        jsonPath("$.positions.[0].position", is("Backend"))
+                        jsonPath("$.techStacks[0]", is("Java")),
+                        jsonPath("$.positions[0]", is("Backend"))
                 )
                 .andDo(MockMvcResultHandlers.print());
-        // then
     }
 }

@@ -2,8 +2,10 @@ package jp.co.topucomunity.backend_java.recruitments.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentTechStack extends BaseEntity {

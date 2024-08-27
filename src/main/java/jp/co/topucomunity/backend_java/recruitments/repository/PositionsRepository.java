@@ -12,8 +12,8 @@ public interface PositionsRepository extends JpaRepository<Position, Long> {
      *
      * select *
      * from position p
-     * where p.position = ?
+     * where p.position_name = ?
      *
      */
-    Optional<Position> findByPosition(String position);
+    Optional<Position> findPositionByPositionName(String positionName);
 }

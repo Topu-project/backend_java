@@ -1,12 +1,10 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/recruitments")
 @RestController
@@ -18,5 +16,10 @@ public class RecruitmentsController {
     @PostMapping
     public void createRecruitment(@RequestBody CreateRecruitmentRequest request) {
         recruitmentsUsecase.post(request.toPostRecruitment());
+    }
+
+    @GetMapping("/{recruitmentId}")
+    public RecruitmentResponse getRecruitmentById(@PathVariable Long recruitmentId) {
+        return recruitmentsUsecase.getRecruitment(recruitmentId);
     }
 }

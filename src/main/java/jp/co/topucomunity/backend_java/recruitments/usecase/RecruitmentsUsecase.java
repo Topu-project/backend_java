@@ -1,9 +1,7 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
-import jp.co.topucomunity.backend_java.recruitments.domain.Position;
-import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentPosition;
-import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentTechStack;
-import jp.co.topucomunity.backend_java.recruitments.domain.TechStack;
+import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
+import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
@@ -35,7 +33,7 @@ public class RecruitmentsUsecase {
 
         // relationship between recruitment, position, and recruitmentPosition.
         postRecruitment.getRecruitmentPositions().stream()
-                .map(positionName -> positionsRepository.findByPosition(positionName).orElse(Position.of(positionName)))
+                .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.of(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.from(position, recruitment);
                     recruitmentPosition.makeRelationship(position, recruitment);
@@ -44,4 +42,9 @@ public class RecruitmentsUsecase {
         recruitmentsRepository.save(recruitment);
     }
 
+    public RecruitmentResponse getRecruitment(Long recruitmentId) {
+        var foundRecruitment = recruitmentsRepository.findById(recruitmentId)
+                .orElseThrow(RecruitmentNotFoundException::new);
+        return RecruitmentResponse.of(foundRecruitment);
+    }
 }

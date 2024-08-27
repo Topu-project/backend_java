@@ -2,11 +2,13 @@ package jp.co.topucomunity.backend_java.recruitments.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Position extends BaseEntity {
@@ -16,13 +18,13 @@ public class Position extends BaseEntity {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
-    private String position;
+    private String positionName;
 
     @OneToMany(mappedBy = "position")
     private List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
 
-    private Position(String position) {
-        this.position = position;
+    private Position(String positionName) {
+        this.positionName = positionName;
     }
 
     public static Position of(String position) {
