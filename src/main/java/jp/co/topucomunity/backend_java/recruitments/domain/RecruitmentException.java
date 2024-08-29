@@ -13,4 +13,6 @@ public abstract class RecruitmentException extends RuntimeException {
     public RecruitmentException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public abstract int getStatusCode();
 }

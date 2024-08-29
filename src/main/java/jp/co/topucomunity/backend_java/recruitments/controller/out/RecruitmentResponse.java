@@ -39,7 +39,7 @@ public class RecruitmentResponse {
         this.positions = positions;
     }
 
-    public static RecruitmentResponse of(Recruitment recruitment) {
+    public static RecruitmentResponse from(Recruitment recruitment) {
         return RecruitmentResponse.builder()
                 .id(recruitment.getId())
                 .recruitmentCategories(recruitment.getRecruitmentCategories())

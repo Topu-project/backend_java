@@ -3,6 +3,7 @@ package jp.co.topucomunity.backend_java.recruitments.domain;
 import jakarta.persistence.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,7 +44,7 @@ public class Recruitment extends BaseEntity {
     private List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
 
     @Builder
-    public Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks) {
+    private Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks) {
         this.recruitmentCategories = recruitmentCategories;
         this.progressMethods = progressMethods;
         this.numberOfPeople = numberOfPeople;
@@ -53,6 +54,20 @@ public class Recruitment extends BaseEntity {
         this.subject = subject;
         this.content = content;
         this.recruitmentTechStacks = recruitmentTechStacks;
+    }
+
+    public static Recruitment from(PostRecruitment postRecruitment) {
+        return Recruitment.builder()
+                .recruitmentCategories(postRecruitment.getRecruitmentCategories())
+                .progressMethods(postRecruitment.getProgressMethods())
+                .recruitmentTechStacks(new ArrayList<>())
+                .numberOfPeople(postRecruitment.getNumberOfPeople())
+                .progressPeriod(postRecruitment.getProgressPeriod())
+                .recruitmentDeadline(postRecruitment.getRecruitmentDeadline())
+                .contract(postRecruitment.getContract())
+                .subject(postRecruitment.getSubject())
+                .content(postRecruitment.getContent())
+                .build();
     }
 
     public void makeRelationshipWithRecruitmentTechStack(RecruitmentTechStack recruitmentTechStack) {

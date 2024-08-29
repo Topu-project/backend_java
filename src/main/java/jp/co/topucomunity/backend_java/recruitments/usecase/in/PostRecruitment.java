@@ -1,13 +1,12 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase.in;
 
-import jp.co.topucomunity.backend_java.recruitments.domain.Recruitment;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,17 +24,18 @@ public class PostRecruitment {
     private String subject;
     private String content;
 
-    public Recruitment toRecruitment() {
-        return Recruitment.builder()
-                .recruitmentCategories(this.recruitmentCategories)
-                .progressMethods(this.progressMethods)
-                .recruitmentTechStacks(new ArrayList<>())
-                .numberOfPeople(this.numberOfPeople)
-                .progressPeriod(this.progressPeriod)
-                .recruitmentDeadline(this.recruitmentDeadline)
-                .contract(this.contract)
-                .subject(this.subject)
-                .content(this.content)
+    public static PostRecruitment from(CreateRecruitmentRequest request) {
+        return PostRecruitment.builder()
+                .recruitmentCategories(request.getRecruitmentCategories())
+                .progressMethods(request.getProgressMethods())
+                .techStacks(request.getTechStacks())
+                .recruitmentPositions(request.getRecruitmentPositions())
+                .numberOfPeople(request.getNumberOfPeople())
+                .progressPeriod(request.getProgressPeriod())
+                .recruitmentDeadline(request.getRecruitmentDeadline())
+                .contract(request.getContract())
+                .subject(request.getSubject())
+                .content(request.getContent())
                 .build();
     }
 }

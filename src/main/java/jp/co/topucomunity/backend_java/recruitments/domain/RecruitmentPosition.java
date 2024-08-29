@@ -27,7 +27,7 @@ public class RecruitmentPosition extends BaseEntity {
         this.position = position;
     }
 
-    public static RecruitmentPosition from(Position position, Recruitment recruitment) {
+    public static RecruitmentPosition of(Position position, Recruitment recruitment) {
         return new RecruitmentPosition(recruitment, position);
     }
 

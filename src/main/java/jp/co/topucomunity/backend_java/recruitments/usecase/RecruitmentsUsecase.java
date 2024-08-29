@@ -21,13 +21,13 @@ public class RecruitmentsUsecase {
     @Transactional
     public void post(PostRecruitment postRecruitment) {
 
-        var recruitment = postRecruitment.toRecruitment();
+        var recruitment = Recruitment.from(postRecruitment);
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         postRecruitment.getTechStacks().stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.of(techName)))
                 .forEach(techStack -> {
-                    var recruitmentTechStack = RecruitmentTechStack.from(techStack, recruitment);
+                    var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
                     recruitmentTechStack.makeRelationship(techStack, recruitment);
                 });
 
@@ -35,7 +35,7 @@ public class RecruitmentsUsecase {
         postRecruitment.getRecruitmentPositions().stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.of(positionName)))
                 .forEach(position -> {
-                    var recruitmentPosition = RecruitmentPosition.from(position, recruitment);
+                    var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
                     recruitmentPosition.makeRelationship(position, recruitment);
                 });
 
@@ -45,6 +45,13 @@ public class RecruitmentsUsecase {
     public RecruitmentResponse getRecruitment(Long recruitmentId) {
         var foundRecruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
-        return RecruitmentResponse.of(foundRecruitment);
+        return RecruitmentResponse.from(foundRecruitment);
+    }
+
+    public void deleteRecruitment(Long recruitmentId) {
+        recruitmentsRepository.findById(recruitmentId)
+                .orElseThrow(RecruitmentNotFoundException::new);
+
+        recruitmentsRepository.deleteById(recruitmentId);
     }
 }

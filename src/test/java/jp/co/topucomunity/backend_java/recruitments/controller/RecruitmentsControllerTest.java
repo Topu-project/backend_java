@@ -69,7 +69,6 @@ class RecruitmentsControllerTest {
     @Test
     void getRecruitmentById() throws Exception {
         // given
-        var recruitmentId = 1L;
         var techStack = TechStack.of("Java");
         var position = Position.of("Backend");
         var recruitment = Recruitment.builder()
@@ -83,15 +82,15 @@ class RecruitmentsControllerTest {
                 .content("사실은 윈도우앱")
                 .recruitmentTechStacks(new ArrayList<>())
                 .build();
-        var recruitmentPosition = RecruitmentPosition.from(position, recruitment);
-        var recruitmentTechStack = RecruitmentTechStack.from(techStack, recruitment);
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
         recruitmentPosition.makeRelationship(position, recruitment);
         recruitmentTechStack.makeRelationship(techStack, recruitment);
 
-        recruitmentsRepository.save(recruitment);
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/{recruitmentId}", recruitmentId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpectAll(
@@ -106,5 +105,45 @@ class RecruitmentsControllerTest {
                         jsonPath("$.positions[0]", is("Backend"))
                 )
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @DisplayName("응모 ID 에 해당하는 응모글이 없으면 에러가 발생한다.")
+    @Test
+    void getRecruitmentByIdFail() throws Exception {
+        // given
+        var recruitmentId = 1L;
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/{recruitmentId}", recruitmentId))
+                .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("작성한 응모글을 삭제하면 응모글 목록에서 제거된다.")
+    @Test
+    void deleteRecruitmentById() throws Exception {
+        // given
+        var techStack = TechStack.of("Java");
+        var position = Position.of("Backend");
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.delete("/recruitments/{recruitmentId}", savedRecruitment.getId()))
+                .andExpect(status().isOk());
     }
 }

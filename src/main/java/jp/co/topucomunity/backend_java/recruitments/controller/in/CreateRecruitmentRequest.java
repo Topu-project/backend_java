@@ -2,7 +2,6 @@ package jp.co.topucomunity.backend_java.recruitments.controller.in;
 
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
-import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,18 +23,4 @@ public class CreateRecruitmentRequest {
     private String subject;
     private String content;
 
-    public PostRecruitment toPostRecruitment() {
-        return PostRecruitment.builder()
-                .recruitmentDeadline(this.recruitmentDeadline)
-                .progressMethods(this.progressMethods)
-                .techStacks(this.techStacks)
-                .recruitmentPositions(this.recruitmentPositions)
-                .numberOfPeople(this.numberOfPeople)
-                .progressPeriod(this.progressPeriod)
-                .recruitmentDeadline(this.recruitmentDeadline)
-                .contract(this.contract)
-                .subject(this.subject)
-                .content(this.content)
-                .build();
-    }
 }

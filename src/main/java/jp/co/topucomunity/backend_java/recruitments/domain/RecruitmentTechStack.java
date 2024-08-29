@@ -26,7 +26,7 @@ public class RecruitmentTechStack extends BaseEntity {
         this.recruitment = recruitment;
     }
 
-    public static RecruitmentTechStack from(TechStack techStack, Recruitment recruitment) {
+    public static RecruitmentTechStack of(TechStack techStack, Recruitment recruitment) {
         return new RecruitmentTechStack(techStack, recruitment);
     }
 
