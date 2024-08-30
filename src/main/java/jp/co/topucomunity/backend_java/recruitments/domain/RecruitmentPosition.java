@@ -3,10 +3,9 @@ package jp.co.topucomunity.backend_java.recruitments.domain;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
+//@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentPosition extends BaseEntity {
@@ -34,5 +33,10 @@ public class RecruitmentPosition extends BaseEntity {
     public void makeRelationship(Position position, Recruitment recruitment) {
         position.makeRelationship(this);
         recruitment.makeRelationshipWithRecruitmentPosition(this);
+    }
+
+    // 디미터 법칙 준수
+    public String getPositionName() {
+        return this.position.getPositionName();
     }
 }

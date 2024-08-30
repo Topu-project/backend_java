@@ -27,7 +27,7 @@ public class Position extends BaseEntity {
         this.positionName = positionName;
     }
 
-    public static Position of(String position) {
+    public static Position from(String position) {
         return new Position(position);
     }
 

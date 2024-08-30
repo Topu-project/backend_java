@@ -1,5 +1,6 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
+import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
@@ -9,6 +10,8 @@ import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class RecruitmentsUsecase {
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         postRecruitment.getTechStacks().stream()
-                .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.of(techName)))
+                .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
                 .forEach(techStack -> {
                     var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
                     recruitmentTechStack.makeRelationship(techStack, recruitment);
@@ -33,7 +36,7 @@ public class RecruitmentsUsecase {
 
         // relationship between recruitment, position, and recruitmentPosition.
         postRecruitment.getRecruitmentPositions().stream()
-                .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.of(positionName)))
+                .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
                     recruitmentPosition.makeRelationship(position, recruitment);
@@ -54,4 +57,14 @@ public class RecruitmentsUsecase {
 
         recruitmentsRepository.deleteById(recruitmentId);
     }
+
+    public List<RecruitmentIndexPageResponse> getRecruitments() {
+        var recruitments = recruitmentsRepository.findAll();
+
+        return recruitments.stream()
+                .map(RecruitmentIndexPageResponse::from).toList();
+    }
+
+    // TODO : Update
+
 }

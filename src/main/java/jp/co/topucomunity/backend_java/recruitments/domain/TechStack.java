@@ -27,7 +27,7 @@ public class TechStack extends BaseEntity {
         this.technologyName = technologyName;
     }
 
-    public static TechStack of(String technologyName) {
+    public static TechStack from(String technologyName) {
         return new TechStack(technologyName);
     }
 

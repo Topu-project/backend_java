@@ -1,28 +1,29 @@
 package jp.co.topucomunity.backend_java.recruitments.controller.out;
 
 import jp.co.topucomunity.backend_java.recruitments.domain.Recruitment;
+import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentPosition;
+import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentTechStack;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class RecruitmentResponse {
-    private Long id;
-    private RecruitmentCategories recruitmentCategories;
-    private ProgressMethods progressMethods;
-    private int numberOfPeople;
-    private int progressPeriod;
-    private LocalDate recruitmentDeadline;
-    private String contract;
-    private String subject;
-    private String content;
-    private List<String> techStacks = new ArrayList<>();
-    private List<String> positions = new ArrayList<>();
+    private final Long id;
+    private final RecruitmentCategories recruitmentCategories;
+    private final ProgressMethods progressMethods;
+    private final int numberOfPeople;
+    private final int progressPeriod;
+    private final LocalDate recruitmentDeadline;
+    private final String contract;
+    private final String subject;
+    private final String content;
+    private final List<String> techStacks;
+    private final List<String> positions;
 
     @Builder
     private RecruitmentResponse(Long id, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<String> techStacks, List<String> positions) {
@@ -51,15 +52,9 @@ public class RecruitmentResponse {
                 .subject(recruitment.getSubject())
                 .content(recruitment.getContent())
                 .techStacks(recruitment.getRecruitmentTechStacks().stream()
-                        .map(recruitmentTechStack ->
-                                recruitmentTechStack.getTechStack()
-                                        .getTechnologyName())
-                        .toList())
+                        .map(RecruitmentTechStack::getTechnologyName).toList())
                 .positions(recruitment.getRecruitmentPositions().stream()
-                        .map(recruitmentPosition ->
-                                recruitmentPosition.getPosition()
-                                        .getPositionName())
-                        .toList())
+                        .map(RecruitmentPosition::getPositionName).toList())
                 .build();
     }
 }

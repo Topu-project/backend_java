@@ -2,10 +2,9 @@ package jp.co.topucomunity.backend_java.recruitments.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
+//@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentTechStack extends BaseEntity {
@@ -33,6 +32,11 @@ public class RecruitmentTechStack extends BaseEntity {
     public void makeRelationship(TechStack techStack, Recruitment recruitment) {
         techStack.makeRelationship(this);
         recruitment.makeRelationshipWithRecruitmentTechStack(this);
+    }
+
+    // 디미터 법칙 준수를 위해
+    public String getTechnologyName() {
+        return this.techStack.getTechnologyName();
     }
 
 }
