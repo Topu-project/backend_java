@@ -32,7 +32,7 @@ public class RecruitmentsController {
         recruitmentsUsecase.deleteRecruitment(recruitmentId);
     }
 
-    @GetMapping
+    @GetMapping// TODO : Paging, Search, QueryDSL
     public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage() {
         return recruitmentsUsecase.getRecruitments();
     }

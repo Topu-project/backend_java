@@ -33,6 +33,7 @@ public class Recruitment extends BaseEntity {
     private LocalDate recruitmentDeadline;
     private String contract;
     private String subject;
+    // TODO : Views
 
     @Lob
     private String content;

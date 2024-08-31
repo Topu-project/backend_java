@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * {
- *   "message": "잘못된 요청입니다",
+ *   "error_message": "잘못된 요청입니다",
  *   "validation_errors: {
  *      "title": "1글자 입력해주세요",
  *      "contact": "메일 주소를 제대로 입력해 주세요"
@@ -19,6 +19,7 @@ import java.util.Map;
 @Getter
 public class RecruitmentErrorResponse {
 
+    // TODO : change variable name -> errorMessage
     private final String message;
     private final Map<String, String> validationErrors;
 
