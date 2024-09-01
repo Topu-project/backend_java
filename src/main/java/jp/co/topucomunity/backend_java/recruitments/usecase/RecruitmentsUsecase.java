@@ -1,5 +1,7 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
+import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -66,5 +68,29 @@ public class RecruitmentsUsecase {
     }
 
     // TODO : Update
+    @Transactional
+    public void updateRecruitment(Long recruitmentId, UpdateRecruitmentRequest updateRecruitment) {
+        var foundRecruitment = recruitmentsRepository.findById(recruitmentId)
+                .orElseThrow(RecruitmentNotFoundException::new);
+
+        // relationship between recruitment, techStack, and recruitmentTechStack.
+        updateRecruitment.getTechStacks().stream()
+                .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
+                .forEach(techStack -> {
+                    var recruitmentTechStack = RecruitmentTechStack.of(techStack, foundRecruitment);
+                    recruitmentTechStack.makeRelationship(techStack, foundRecruitment);
+                });
+
+        // relationship between recruitment, position, and recruitmentPosition.
+        updateRecruitment.getRecruitmentPositions().stream()
+                .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
+                .forEach(position -> {
+                    var recruitmentPosition = RecruitmentPosition.of(position, foundRecruitment);
+                    recruitmentPosition.makeRelationship(position, foundRecruitment);
+                });
+
+
+
+    }
 
 }

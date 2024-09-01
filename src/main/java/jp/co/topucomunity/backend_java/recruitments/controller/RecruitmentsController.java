@@ -1,6 +1,7 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
@@ -38,6 +39,10 @@ public class RecruitmentsController {
     }
 
     // TODO : updateByRecruitmentId
+    @PatchMapping("/{recruitmentId}")
+    public void updateByRecruitmentId(@PathVariable Long recruitmentId, UpdateRecruitmentRequest request) {
+        recruitmentsUsecase.updateRecruitment(recruitmentId, request);
+    }
 
     // TODO : getTechStacks
 }
