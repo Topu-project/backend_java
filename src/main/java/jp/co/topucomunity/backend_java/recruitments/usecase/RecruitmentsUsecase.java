@@ -1,6 +1,5 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
-import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
@@ -9,6 +8,7 @@ import jp.co.topucomunity.backend_java.recruitments.repository.PositionsReposito
 import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,28 +69,30 @@ public class RecruitmentsUsecase {
 
     // TODO : Update
     @Transactional
-    public void updateRecruitment(Long recruitmentId, UpdateRecruitmentRequest updateRecruitment) {
-        var foundRecruitment = recruitmentsRepository.findById(recruitmentId)
+    public void updateRecruitment(Long recruitmentId, UpdateRecruitmentRequest updateRecruitmentRequest) {
+
+        Recruitment recruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
 
+        UpdateRecruitment updatedRecruitment = UpdateRecruitment.update(updateRecruitmentRequest);
+
+        recruitment.update(updatedRecruitment);
+
         // relationship between recruitment, techStack, and recruitmentTechStack.
-        updateRecruitment.getTechStacks().stream()
+        updateRecruitmentRequest.getTechStacks().stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
                 .forEach(techStack -> {
-                    var recruitmentTechStack = RecruitmentTechStack.of(techStack, foundRecruitment);
-                    recruitmentTechStack.makeRelationship(techStack, foundRecruitment);
+                    var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+                    recruitmentTechStack.makeRelationship(techStack, recruitment);
                 });
 
         // relationship between recruitment, position, and recruitmentPosition.
-        updateRecruitment.getRecruitmentPositions().stream()
+        updateRecruitmentRequest.getRecruitmentPositions().stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
-                    var recruitmentPosition = RecruitmentPosition.of(position, foundRecruitment);
-                    recruitmentPosition.makeRelationship(position, foundRecruitment);
+                    var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+                    recruitmentPosition.makeRelationship(position, recruitment);
                 });
-
-
-
     }
 
 }

@@ -1,9 +1,11 @@
 package jp.co.topucomunity.backend_java.recruitments.domain;
 
 import jakarta.persistence.*;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,5 +79,17 @@ public class Recruitment extends BaseEntity {
 
     public void makeRelationshipWithRecruitmentPosition(RecruitmentPosition recruitmentPosition) {
         this.recruitmentPositions.add(recruitmentPosition);
+    }
+
+    public void update(UpdateRecruitment updateRecruitment) {
+        recruitmentCategories = updateRecruitment.getRecruitmentCategories();
+        progressMethods = updateRecruitment.getProgressMethods();
+        numberOfPeople = updateRecruitment.getNumberOfPeople();
+        progressPeriod = updateRecruitment.getProgressPeriod();
+        recruitmentDeadline = updateRecruitment.getRecruitmentDeadline();
+        contract = updateRecruitment.getContract();
+        subject = updateRecruitment.getSubject();
+        content = updateRecruitment.getContent();
+        //recruitmentTechStacks = updateRecruitment.getTechStacks(); // TODO
     }
 }
