@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'jp.co.topucomunity'
@@ -9,15 +10,21 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
 }
+
+ext { // ext => 전역변수
+    snippetsDir = file('build/generated-snippets') // <- 추가
+}
+
 
 repositories {
     mavenCentral()
@@ -41,8 +48,53 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // rest docs
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
-tasks.named('test') {
+
+test { // <- 추가
+    outputs.dir snippetsDir
     useJUnitPlatform()
+
+}
+
+asciidoctor { // asciidoctor 작업 구성
+    dependsOn test // test 작업 이후에 작동하도록 하는 설정
+    configurations 'asciidoctorExt' // 위에서 작성한 configuration 적용
+    inputs.dir snippetsDir // snippetsDir 를 입력으로 구성
+
+    sources{
+        include("**/index.adoc")
+    }
+
+    // 특정 .adoc에 다른 adoc 파일을 가져와서(include) 사용하고 싶을 경우 경로를 baseDir로 맞춰주는 설정입니다.
+    // 개별 adoc으로 운영한다면 필요 없는 옵션입니다.
+    baseDirFollowsSourceFile()
+}
+
+// static/docs 폴더 비우기
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+// asccidoctor 작업 이후 생성된 HTML 파일을 static/docs 로 copy
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+// build 의 의존작업 명시
+build {
+    dependsOn copyDocument
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
