@@ -1,6 +1,5 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
-import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -67,19 +66,29 @@ public class RecruitmentsUsecase {
                 .map(RecruitmentIndexPageResponse::from).toList();
     }
 
-    // TODO : Update
     @Transactional
-    public void updateRecruitment(Long recruitmentId, UpdateRecruitmentRequest updateRecruitmentRequest) {
+    public void update(Long recruitmentId, UpdateRecruitment updateRecruitment) {
 
-        Recruitment recruitment = recruitmentsRepository.findById(recruitmentId)
+        var recruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
 
-        UpdateRecruitment updatedRecruitment = UpdateRecruitment.update(updateRecruitmentRequest);
+        UpdateRecruitment.UpdateRecruitmentBuilder updateRecruitmentBuilder = recruitment.toEditor();
+
+        UpdateRecruitment updatedRecruitment = updateRecruitmentBuilder
+                .recruitmentCategories(updateRecruitment.getRecruitmentCategories())
+                .progressMethods(updateRecruitment.getProgressMethods())
+                .numberOfPeople(updateRecruitment.getNumberOfPeople())
+                .progressPeriod(updateRecruitment.getProgressPeriod())
+                .recruitmentDeadline(updateRecruitment.getRecruitmentDeadline())
+                .contract(updateRecruitment.getContract())
+                .subject(updateRecruitment.getSubject())
+                .content(updateRecruitment.getContent())
+                .build();
 
         recruitment.update(updatedRecruitment);
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
-        updateRecruitmentRequest.getTechStacks().stream()
+        updateRecruitment.getTechStacks().stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
                 .forEach(techStack -> {
                     var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
@@ -87,7 +96,7 @@ public class RecruitmentsUsecase {
                 });
 
         // relationship between recruitment, position, and recruitmentPosition.
-        updateRecruitmentRequest.getRecruitmentPositions().stream()
+        updateRecruitment.getRecruitmentPositions().stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);

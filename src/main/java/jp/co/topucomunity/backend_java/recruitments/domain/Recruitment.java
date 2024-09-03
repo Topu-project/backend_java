@@ -1,7 +1,6 @@
 package jp.co.topucomunity.backend_java.recruitments.domain;
 
 import jakarta.persistence.*;
-import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
@@ -73,12 +72,16 @@ public class Recruitment extends BaseEntity {
                 .build();
     }
 
-    public void makeRelationshipWithRecruitmentTechStack(RecruitmentTechStack recruitmentTechStack) {
-        this.recruitmentTechStacks.add(recruitmentTechStack);
-    }
-
-    public void makeRelationshipWithRecruitmentPosition(RecruitmentPosition recruitmentPosition) {
-        this.recruitmentPositions.add(recruitmentPosition);
+    public UpdateRecruitment.UpdateRecruitmentBuilder toEditor() {
+        return UpdateRecruitment.builder()
+                .recruitmentCategories(recruitmentCategories)
+                .progressMethods(progressMethods)
+                .numberOfPeople(numberOfPeople)
+                .progressPeriod(progressPeriod)
+                .recruitmentDeadline(recruitmentDeadline)
+                .contract(contract)
+                .subject(subject)
+                .content(content);
     }
 
     public void update(UpdateRecruitment updateRecruitment) {
@@ -90,6 +93,13 @@ public class Recruitment extends BaseEntity {
         contract = updateRecruitment.getContract();
         subject = updateRecruitment.getSubject();
         content = updateRecruitment.getContent();
-        //recruitmentTechStacks = updateRecruitment.getTechStacks(); // TODO
+    }
+
+    public void makeRelationshipWithRecruitmentTechStack(RecruitmentTechStack recruitmentTechStack) {
+        this.recruitmentTechStacks.add(recruitmentTechStack);
+    }
+
+    public void makeRelationshipWithRecruitmentPosition(RecruitmentPosition recruitmentPosition) {
+        this.recruitmentPositions.add(recruitmentPosition);
     }
 }

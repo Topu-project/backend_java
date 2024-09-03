@@ -24,7 +24,7 @@ public class UpdateRecruitment {
     private String subject;
     private String content;
 
-    public static UpdateRecruitment update(UpdateRecruitmentRequest request) {
+    public static UpdateRecruitment from(UpdateRecruitmentRequest request) {
         return UpdateRecruitment.builder()
                 .recruitmentCategories(request.getRecruitmentCategories())
                 .progressMethods(request.getProgressMethods())
@@ -36,7 +36,6 @@ public class UpdateRecruitment {
                 .contract(request.getContract())
                 .subject(request.getSubject())
                 .content(request.getContent())
-                .techStacks(request.getTechStacks())
                 .build();
     }
 }
