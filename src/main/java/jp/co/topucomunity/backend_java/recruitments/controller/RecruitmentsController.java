@@ -39,7 +39,7 @@ public class RecruitmentsController {
         return recruitmentsUsecase.getRecruitments();
     }
 
-    @PatchMapping("/{recruitmentId}")
+    @PutMapping("/{recruitmentId}")
     public void updateByRecruitmentId(@PathVariable Long recruitmentId, @RequestBody UpdateRecruitmentRequest request) {
         recruitmentsUsecase.update(recruitmentId, UpdateRecruitment.from(request));
     }

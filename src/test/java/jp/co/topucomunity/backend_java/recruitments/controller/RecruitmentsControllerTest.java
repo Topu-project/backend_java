@@ -2,10 +2,12 @@ package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -99,23 +101,7 @@ class RecruitmentsControllerTest {
     @Test
     void getRecruitmentById() throws Exception {
         // given
-        var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
-        var recruitment = Recruitment.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
-                .numberOfPeople(3)
-                .progressPeriod(3)
-                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
-                .contract("test@tesc.om")
-                .subject("끝내주는 서비스를 개발 해 봅시다.")
-                .content("사실은 윈도우앱")
-                .recruitmentTechStacks(new ArrayList<>())
-                .build();
-        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
-        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
-        recruitmentPosition.makeRelationship(position, recruitment);
-        recruitmentTechStack.makeRelationship(techStack, recruitment);
+        var recruitment = createAndSaveRecruitment();
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -152,23 +138,7 @@ class RecruitmentsControllerTest {
     @Test
     void deleteRecruitmentById() throws Exception {
         // given
-        var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
-        var recruitment = Recruitment.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
-                .numberOfPeople(3)
-                .progressPeriod(3)
-                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
-                .contract("test@tesc.om")
-                .subject("끝내주는 서비스를 개발 해 봅시다.")
-                .content("사실은 윈도우앱")
-                .recruitmentTechStacks(new ArrayList<>())
-                .build();
-        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
-        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
-        recruitmentPosition.makeRelationship(position, recruitment);
-        recruitmentTechStack.makeRelationship(techStack, recruitment);
+        var recruitment = createAndSaveRecruitment();
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -178,6 +148,39 @@ class RecruitmentsControllerTest {
     }
 
     // TODO : update (Happy case)
+    @Transactional
+    @DisplayName("작성한 응모글을 수정한다")
+    @Test
+    void updateRecruitment() throws Exception {
+        // given
+        var recruitment = createAndSaveRecruitment();
+
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        UpdateRecruitment updateRecruitment = UpdateRecruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .techStacks(List.of("Python", "Go"))
+                .recruitmentPositions(List.of("Backend22", "DevOps22", "Infra22"))
+                .numberOfPeople(11)
+                .progressPeriod(22)
+                .recruitmentDeadline(LocalDate.of(2024, 12, 31))
+                .contract("updateMail@test.com")
+                .subject("탈출하고싶다")
+                .content("어서나가자")
+                .build();
+
+        savedRecruitment.update(updateRecruitment);
+
+        String jsonString = objectMapper.writeValueAsString(savedRecruitment);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andExpect(status().isOk());
+    }
+
     // TODO : updateFail
 
     @Transactional
@@ -186,23 +189,7 @@ class RecruitmentsControllerTest {
     void getRecruitments() throws Exception {
         // given
         // TODO : Require cleansing
-        var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
-        var recruitment1 = Recruitment.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
-                .numberOfPeople(3)
-                .progressPeriod(3)
-                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
-                .contract("test@tesc.om")
-                .subject("끝내주는 서비스를 개발 해 봅시다.")
-                .content("사실은 윈도우앱")
-                .recruitmentTechStacks(new ArrayList<>())
-                .build();
-        var recruitmentPosition = RecruitmentPosition.of(position, recruitment1);
-        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment1);
-        recruitmentPosition.makeRelationship(position, recruitment1);
-        recruitmentTechStack.makeRelationship(techStack, recruitment1);
+        var recruitment1 = createAndSaveRecruitment();
 
         var techStack2 = TechStack.from("Kotlin");
         var position2 = Position.from("BackendEngineer");
@@ -237,5 +224,30 @@ class RecruitmentsControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].subject", is("끝내주는 서비스를 개발 해 봅시다.")))
                 .andDo(print());
 
+    }
+
+    /**
+     *  테스트에 필요한 Recruitment 객체값 설정
+     * @return Recruitment
+     */
+    private static Recruitment createAndSaveRecruitment() {
+        var techStack = TechStack.from("Java");
+        var position = Position.from("Backend");
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+        return recruitment;
     }
 }
