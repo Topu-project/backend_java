@@ -7,11 +7,14 @@ import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
+import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -43,6 +46,8 @@ class RecruitmentsControllerTest {
     private final PositionsRepository positionsRepository;
     private final RecruitmentTechStacksRepository recruitmentTechStacksRepository;
     private final RecruitmentPositionsRepository recruitmentPositionsRepository;
+    @Autowired
+    private RecruitmentsUsecase recruitmentsUsecase;
 
     @AfterEach
     void tearDown() {
@@ -101,7 +106,7 @@ class RecruitmentsControllerTest {
     @Test
     void getRecruitmentById() throws Exception {
         // given
-        var recruitment = createAndSaveRecruitment();
+        var recruitment = createRecruitment();
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -138,7 +143,7 @@ class RecruitmentsControllerTest {
     @Test
     void deleteRecruitmentById() throws Exception {
         // given
-        var recruitment = createAndSaveRecruitment();
+        var recruitment = createRecruitment();
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -153,32 +158,38 @@ class RecruitmentsControllerTest {
     @Test
     void updateRecruitment() throws Exception {
         // given
-        var recruitment = createAndSaveRecruitment();
+        var recruitment = createRecruitment();
 
-        var savedRecruitment = recruitmentsRepository.save(recruitment);
+        recruitmentsRepository.save(recruitment);
 
-        UpdateRecruitment updateRecruitment = UpdateRecruitment.builder()
+        UpdateRecruitmentRequest updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.STUDY)
                 .progressMethods(ProgressMethods.ALL)
                 .techStacks(List.of("Python", "Go"))
                 .recruitmentPositions(List.of("Backend22", "DevOps22", "Infra22"))
-                .numberOfPeople(11)
-                .progressPeriod(22)
-                .recruitmentDeadline(LocalDate.of(2024, 12, 31))
-                .contract("updateMail@test.com")
-                .subject("탈출하고싶다")
-                .content("어서나가자")
+                .numberOfPeople(93)
+                .progressPeriod(90)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("수정된 제목")
+                .content("수정된 본문")
                 .build();
 
-        savedRecruitment.update(updateRecruitment);
+        UpdateRecruitment updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
 
-        String jsonString = objectMapper.writeValueAsString(savedRecruitment);
+        // when
+        recruitmentsUsecase.update(recruitment.getId(), updateRecruitment);
 
-        // expected
-        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+        // then
+        Assertions.assertEquals("수정된 제목", recruitment.getSubject());
+        Assertions.assertEquals("수정된 본문", recruitment.getContent());
+
+        String jsonString = objectMapper.writeValueAsString(recruitment);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", recruitment.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); //TODO ??
     }
 
     // TODO : updateFail
@@ -189,7 +200,7 @@ class RecruitmentsControllerTest {
     void getRecruitments() throws Exception {
         // given
         // TODO : Require cleansing
-        var recruitment1 = createAndSaveRecruitment();
+        var recruitment1 = createRecruitment();
 
         var techStack2 = TechStack.from("Kotlin");
         var position2 = Position.from("BackendEngineer");
@@ -227,10 +238,10 @@ class RecruitmentsControllerTest {
     }
 
     /**
-     *  테스트에 필요한 Recruitment 객체값 설정
+     *  테스트에 필요한 Recruitment 데이터 생성
      * @return Recruitment
      */
-    private static Recruitment createAndSaveRecruitment() {
+    private static Recruitment createRecruitment() {
         var techStack = TechStack.from("Java");
         var position = Position.from("Backend");
         var recruitment = Recruitment.builder()

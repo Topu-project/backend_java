@@ -1,5 +1,6 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -72,20 +73,7 @@ public class RecruitmentsUsecase {
         var recruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
 
-        UpdateRecruitment.UpdateRecruitmentBuilder updateRecruitmentBuilder = recruitment.toEditor();
-
-        UpdateRecruitment updatedRecruitment = updateRecruitmentBuilder
-                .recruitmentCategories(updateRecruitment.getRecruitmentCategories())
-                .progressMethods(updateRecruitment.getProgressMethods())
-                .numberOfPeople(updateRecruitment.getNumberOfPeople())
-                .progressPeriod(updateRecruitment.getProgressPeriod())
-                .recruitmentDeadline(updateRecruitment.getRecruitmentDeadline())
-                .contract(updateRecruitment.getContract())
-                .subject(updateRecruitment.getSubject())
-                .content(updateRecruitment.getContent())
-                .build();
-
-        recruitment.update(updatedRecruitment);
+        recruitment.update(updateRecruitment);
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         updateRecruitment.getTechStacks().stream()

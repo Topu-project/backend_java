@@ -72,18 +72,6 @@ public class Recruitment extends BaseEntity {
                 .build();
     }
 
-    public UpdateRecruitment.UpdateRecruitmentBuilder toEditor() {
-        return UpdateRecruitment.builder()
-                .recruitmentCategories(recruitmentCategories)
-                .progressMethods(progressMethods)
-                .numberOfPeople(numberOfPeople)
-                .progressPeriod(progressPeriod)
-                .recruitmentDeadline(recruitmentDeadline)
-                .contract(contract)
-                .subject(subject)
-                .content(content);
-    }
-
     public void update(UpdateRecruitment updateRecruitment) {
         recruitmentCategories = updateRecruitment.getRecruitmentCategories();
         progressMethods = updateRecruitment.getProgressMethods();
