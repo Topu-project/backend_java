@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
@@ -36,9 +37,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class RecruitmentApiDocsTest {
 
-    private final MockMvc mockMvc;
+    private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     private final RecruitmentsRepository recruitmentsRepository;
+
+    @DisplayName("응모 ID 를 이용하여 해당 응모글을 응모글 목록에서 제거할 수 있다.")
+    @Test
+    void deleteRecruitmentById() throws Exception {
+        // given
+        var techStack = TechStack.from("Java");
+        var position = Position.from("Backend");
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        // expect
+        mvc.perform(RestDocumentationRequestBuilders.delete("/recruitments/{recruitmentId}", savedRecruitment.getId()))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcRestDocumentation.document("delete-recruitment",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("recruitmentId").description("응모 ID")
+                        )
+                ))
+                .andDo(print());
+    }
 
     @DisplayName("응모글 ID로 응모글의 상세내용을 확인할 수 있다.")
     @Test
@@ -66,7 +102,7 @@ public class RecruitmentApiDocsTest {
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         // expected
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{recruitmentId}", savedRecruitment.getId()))
+        mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{recruitmentId}", savedRecruitment.getId()))
                 .andExpect(status().isOk())
                 .andDo(document("get-recruitment",
                         RequestDocumentation.pathParameters(
@@ -108,7 +144,7 @@ public class RecruitmentApiDocsTest {
         var jsonString = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/recruitments")
+        mvc.perform(RestDocumentationRequestBuilders.post("/recruitments")
                         .content(jsonString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
