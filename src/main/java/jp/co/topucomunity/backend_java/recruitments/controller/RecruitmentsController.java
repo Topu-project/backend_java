@@ -6,6 +6,7 @@ import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentRe
 import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class RecruitmentsController {
         return recruitmentsUsecase.getRecruitment(recruitmentId);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{recruitmentId}")
     public void deleteRecruitmentById(@PathVariable Long recruitmentId) { // TODO : recruitmentIdのnullバリデーション
         recruitmentsUsecase.deleteRecruitment(recruitmentId);

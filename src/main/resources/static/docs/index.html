@@ -456,6 +456,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_http_response">http response</a></li>
 </ul>
 </li>
+<li><a href="#_delete_recruitment_by_id">Delete recruitment by id</a>
+<ul class="sectlevel3">
+<li><a href="#_http_request_2">http request</a></li>
+<li><a href="#_path_parameter">path parameter</a></li>
+<li><a href="#_http_response_2">http response</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -580,6 +587,49 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK</code></pre>
 </div>
 </div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_delete_recruitment_by_id"><a class="link" href="#_delete_recruitment_by_id">Delete recruitment by id</a></h3>
+<div class="sect3">
+<h4 id="_http_request_2"><a class="link" href="#_http_request_2">http request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /recruitments/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_path_parameter"><a class="link" href="#_path_parameter">path parameter</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /recruitments/{recruitmentId}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>recruitmentId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응모 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_http_response_2"><a class="link" href="#_http_response_2">http response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -588,7 +638,7 @@ Host: localhost:8080
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-01 12:30:42 +0900
+Last updated 2024-09-06 16:08:40 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
