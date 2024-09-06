@@ -1,7 +1,8 @@
 name: topu
 
 on:
-  merge_group:
+  pull_request:
+    types: [opened, reopened]
 
 permissions:
   id-token: write
