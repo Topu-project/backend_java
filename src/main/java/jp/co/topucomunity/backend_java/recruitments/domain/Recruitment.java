@@ -83,6 +83,11 @@ public class Recruitment extends BaseEntity {
         content = updateRecruitment.getContent();
     }
 
+    public void clearTechStacksAndPositions() {
+        this.recruitmentTechStacks.clear();
+        this.recruitmentPositions.clear();
+    }
+
     public void makeRelationshipWithRecruitmentTechStack(RecruitmentTechStack recruitmentTechStack) {
         this.recruitmentTechStacks.add(recruitmentTechStack);
     }

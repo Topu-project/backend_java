@@ -1,6 +1,5 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
-import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -73,7 +72,7 @@ public class RecruitmentsUsecase {
         var recruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
 
-        recruitment.update(updateRecruitment);
+        recruitment.clearTechStacksAndPositions();
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         updateRecruitment.getTechStacks().stream()
@@ -83,13 +82,15 @@ public class RecruitmentsUsecase {
                     recruitmentTechStack.makeRelationship(techStack, recruitment);
                 });
 
-        // relationship between recruitment, position, and recruitmentPosition.
+         //relationship between recruitment, position, and recruitmentPosition.
         updateRecruitment.getRecruitmentPositions().stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
                     recruitmentPosition.makeRelationship(position, recruitment);
                 });
+
+        recruitment.update(updateRecruitment);
     }
 
 }

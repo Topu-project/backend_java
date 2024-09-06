@@ -7,6 +7,7 @@ import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
+import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentNotFoundException;
 import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
@@ -181,17 +182,18 @@ class RecruitmentsControllerTest {
         recruitmentsUsecase.update(recruitment.getId(), updateRecruitment);
 
         // then
-        Assertions.assertEquals("수정된 제목", recruitment.getSubject());
-        Assertions.assertEquals("수정된 본문", recruitment.getContent());
+        Recruitment updatedRecruitment = recruitmentsRepository.findById(recruitment.getId())
+                        .orElseThrow(RecruitmentNotFoundException::new);
+        Assertions.assertEquals("수정된 제목", updatedRecruitment.getSubject());
+        Assertions.assertEquals("수정된 본문", updatedRecruitment.getContent());
 
-        String jsonString = objectMapper.writeValueAsString(recruitment);
+        String jsonString = objectMapper.writeValueAsString(updateRecruitment);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", recruitment.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
-                .andExpect(status().isOk()); //TODO ??
+                .andExpect(status().isOk());
     }
-
     // TODO : updateFail
 
     @Transactional
@@ -238,7 +240,7 @@ class RecruitmentsControllerTest {
     }
 
     /**
-     *  테스트에 필요한 Recruitment 데이터 생성
+     *  테스트에 필요한 Recruitment 객체 생성
      * @return Recruitment
      */
     private static Recruitment createRecruitment() {
