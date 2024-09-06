@@ -5,8 +5,9 @@ import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitm
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
-import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
+import jp.co.topucomunity.backend_java.recruitments.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -40,6 +41,19 @@ public class RecruitmentApiDocsTest {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     private final RecruitmentsRepository recruitmentsRepository;
+    private final RecruitmentTechStacksRepository recruitmentTechStacksRepository;
+    private final RecruitmentPositionsRepository recruitmentPositionsRepository;
+    private final PositionsRepository positionsRepository;
+    private final TechStacksRepository techStacksRepository;
+
+    @AfterEach
+    void tearDown() {
+        recruitmentPositionsRepository.deleteAllInBatch();
+        recruitmentTechStacksRepository.deleteAllInBatch();
+        positionsRepository.deleteAllInBatch();
+        techStacksRepository.deleteAllInBatch();
+        recruitmentsRepository.deleteAllInBatch();
+    }
 
     @DisplayName("응모 ID 를 이용하여 해당 응모글을 응모글 목록에서 제거할 수 있다.")
     @Test
