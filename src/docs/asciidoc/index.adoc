@@ -9,3 +9,8 @@
 == Recruitment
 
 include::post-recruitment.adoc[]
+
+---
+
+include::delete-recruitment.adoc[]
+

@@ -2,8 +2,10 @@ package jp.co.topucomunity.backend_java.recruitments.apidocs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
+import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,16 +13,20 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -30,8 +36,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class RecruitmentApiDocsTest {
 
-    private final MockMvc mockMvc;
+    private final MockMvc mvc;
     private final ObjectMapper objectMapper;
+    private final RecruitmentsRepository recruitmentsRepository;
+
+    @DisplayName("응모 ID 를 이용하여 해당 응모글을 응모글 목록에서 제거할 수 있다.")
+    @Test
+    void deleteRecruitmentById() throws Exception {
+        // given
+        var techStack = TechStack.from("Java");
+        var position = Position.from("Backend");
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        // expect
+        mvc.perform(RestDocumentationRequestBuilders.delete("/recruitments/{recruitmentId}", savedRecruitment.getId()))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcRestDocumentation.document("delete-recruitment",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("recruitmentId").description("응모 ID")
+                        )
+                ))
+                .andDo(print());
+    }
 
     @DisplayName("응모글을 작성하면 응모글 목록에 담긴다.")
     @Test
@@ -53,7 +95,7 @@ public class RecruitmentApiDocsTest {
         var jsonString = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/recruitments")
+        mvc.perform(RestDocumentationRequestBuilders.post("/recruitments")
                         .content(jsonString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
