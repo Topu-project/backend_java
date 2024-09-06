@@ -1,5 +1,3 @@
-=== Post recruitment
-
 ==== http request
 include::{snippets}/post-recruitment/http-request.adoc[]
 

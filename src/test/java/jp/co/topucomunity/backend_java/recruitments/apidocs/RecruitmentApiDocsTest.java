@@ -2,8 +2,10 @@ package jp.co.topucomunity.backend_java.recruitments.apidocs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
+import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,15 +14,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -32,6 +38,55 @@ public class RecruitmentApiDocsTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
+    private final RecruitmentsRepository recruitmentsRepository;
+
+    @DisplayName("응모글 ID로 응모글의 상세내용을 확인할 수 있다.")
+    @Test
+    void getRecruitmentById() throws Exception {
+
+        // given
+        var techStack = TechStack.from("Java");
+        var position = Position.from("Backend");
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        // expected
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{recruitmentId}", savedRecruitment.getId()))
+                .andExpect(status().isOk())
+                .andDo(document("get-recruitment",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("recruitmentId").description("응모글 ID")
+                        ),
+                        PayloadDocumentation.responseFields(
+                                fieldWithPath("id").description("응모글 ID"),
+                                fieldWithPath("recruitmentCategories").description("응모 카테고리"),
+                                fieldWithPath("progressMethods").description("진행 방법"),
+                                fieldWithPath("numberOfPeople").description("모집 인원"),
+                                fieldWithPath("progressPeriod").description("진행 기간"),
+                                fieldWithPath("recruitmentDeadline").description("마감일"),
+                                fieldWithPath("contract").description("연락처"),
+                                fieldWithPath("subject").description("제목"),
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("techStacks").description("기술스택"),
+                                fieldWithPath("positions").description("응모 포지션")
+                        )))
+                .andDo(print());
+    }
 
     @DisplayName("응모글을 작성하면 응모글 목록에 담긴다.")
     @Test

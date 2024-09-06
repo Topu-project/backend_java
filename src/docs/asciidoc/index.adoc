@@ -8,4 +8,10 @@
 
 == Recruitment
 
+=== Post recruitment
 include::post-recruitment.adoc[]
+
+---
+
+=== Get Recruitment by id
+include::get-recruitment.adoc[]
