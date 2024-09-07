@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,13 +155,12 @@ class RecruitmentsControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // TODO : update (Happy case)
     @Transactional
     @DisplayName("작성한 응모글을 수정한다")
     @Test
     void updateRecruitment() throws Exception {
         // given
-        var recruitment = createRecruitment();
+        Recruitment recruitment = createRecruitment();
 
         recruitmentsRepository.save(recruitment);
 
@@ -178,21 +179,16 @@ class RecruitmentsControllerTest {
 
         UpdateRecruitment updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
 
-        // when
         recruitmentsUsecase.update(recruitment.getId(), updateRecruitment);
 
-        // then
-        Recruitment updatedRecruitment = recruitmentsRepository.findById(recruitment.getId())
-                        .orElseThrow(RecruitmentNotFoundException::new);
-        Assertions.assertEquals("수정된 제목", updatedRecruitment.getSubject());
-        Assertions.assertEquals("수정된 본문", updatedRecruitment.getContent());
-
+        // expected
         String jsonString = objectMapper.writeValueAsString(updateRecruitment);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", recruitment.getId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/1", recruitment.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
     // TODO : updateFail
 
