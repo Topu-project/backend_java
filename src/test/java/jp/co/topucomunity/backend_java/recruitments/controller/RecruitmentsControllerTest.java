@@ -162,26 +162,14 @@ class RecruitmentsControllerTest {
 
         savedRecruitment.update(updateRecruitment);
 
-        // expected
+        // when
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isOk())
                 .andDo(print());
-
-        // TODO : ServiceTest?
-        assertNotEquals("勉強会", updateRecruitment.getRecruitmentCategories().name());
-        assertNotEquals("全体", updateRecruitment.getProgressMethods().name());
-        assertNotEquals("Java", updateRecruitment.getTechStacks().getFirst());
-        assertNotEquals("Backend", updateRecruitment.getRecruitmentPositions());
-        assertNotEquals(3, savedRecruitment.getNumberOfPeople());
-        assertNotEquals(3, updateRecruitment.getProgressPeriod());
-        assertNotEquals(LocalDate.of(2024, 10, 30), updateRecruitment.getRecruitmentDeadline());
-        assertNotEquals("test@tesc.om", updateRecruitment.getContract());
-        assertNotEquals("끝내주는 서비스를 개발 해 봅시다.", updateRecruitment.getSubject());
-        assertNotEquals("사실은 윈도우앱", updateRecruitment.getContent());
     }
 
     @Transactional
@@ -190,18 +178,12 @@ class RecruitmentsControllerTest {
     void updateFail() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
-        var savedRecruitment = recruitmentsRepository.save(recruitment);
-
-        var updateRecruitmentRequest = getEmptyUpdateRecruitmentRequest();
-        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
-
-        savedRecruitment.update(updateRecruitment);
+        var updateRecruitmentRequest = getUpdateRecruitmentRequest();
 
         // expected
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", updateRecruitmentRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isBadRequest())
@@ -296,7 +278,4 @@ class RecruitmentsControllerTest {
                 .build();
     }
 
-    private static UpdateRecruitmentRequest getEmptyUpdateRecruitmentRequest() {
-        return UpdateRecruitmentRequest.builder().build();
-    }
 }

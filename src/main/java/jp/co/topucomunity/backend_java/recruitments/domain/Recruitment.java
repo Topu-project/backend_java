@@ -73,14 +73,14 @@ public class Recruitment extends BaseEntity {
     }
 
     public void update(UpdateRecruitment updateRecruitment) {
-        recruitmentCategories = updateRecruitment.getRecruitmentCategories();
-        progressMethods = updateRecruitment.getProgressMethods();
-        numberOfPeople = updateRecruitment.getNumberOfPeople();
-        progressPeriod = updateRecruitment.getProgressPeriod();
-        recruitmentDeadline = updateRecruitment.getRecruitmentDeadline();
-        contract = updateRecruitment.getContract();
-        subject = updateRecruitment.getSubject();
-        content = updateRecruitment.getContent();
+        this.recruitmentCategories = updateRecruitment.getRecruitmentCategories();
+        this.progressMethods = updateRecruitment.getProgressMethods();
+        this.numberOfPeople = updateRecruitment.getNumberOfPeople();
+        this.progressPeriod = updateRecruitment.getProgressPeriod();
+        this.recruitmentDeadline = updateRecruitment.getRecruitmentDeadline();
+        this.contract = updateRecruitment.getContract();
+        this.subject = updateRecruitment.getSubject();
+        this.content = updateRecruitment.getContent();
     }
 
     public void clearTechStacksAndPositions() {

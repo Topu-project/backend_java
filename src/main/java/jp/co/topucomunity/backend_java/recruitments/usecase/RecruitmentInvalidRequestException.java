@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class RecruitmentInvalidRequestException extends RecruitmentException {
 
-    public static final String INVALID_REQUEST = "모든 항목을 입력해야합니다.";
+    private static final String INVALID_REQUEST = "모든 항목을 입력해야합니다.";
 
     public RecruitmentInvalidRequestException() {
         super(INVALID_REQUEST);
