@@ -7,22 +7,17 @@ import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
-import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentNotFoundException;
-import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,8 +44,6 @@ class RecruitmentsControllerTest {
     private final PositionsRepository positionsRepository;
     private final RecruitmentTechStacksRepository recruitmentTechStacksRepository;
     private final RecruitmentPositionsRepository recruitmentPositionsRepository;
-    @Autowired
-    private RecruitmentsUsecase recruitmentsUsecase;
 
     @AfterEach
     void tearDown() {
@@ -118,7 +111,7 @@ class RecruitmentsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpectAll(
-                        jsonPath("$.id", is(1)),
+                        jsonPath("$.id", is(savedRecruitment.getId().intValue())),
                         jsonPath("$.recruitmentCategories", is("STUDY")),
                         jsonPath("$.progressMethods", is("ALL")),
                         jsonPath("$.recruitmentDeadline", is("2024-10-30")),
@@ -159,38 +152,62 @@ class RecruitmentsControllerTest {
     @DisplayName("작성한 응모글을 수정한다")
     @Test
     void updateRecruitment() throws Exception {
+
         // given
-        Recruitment recruitment = createRecruitment();
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
 
-        recruitmentsRepository.save(recruitment);
+        var updateRecruitmentRequest = getUpdateRecruitmentRequest();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
 
-        UpdateRecruitmentRequest updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
-                .techStacks(List.of("Python", "Go"))
-                .recruitmentPositions(List.of("Backend22", "DevOps22", "Infra22"))
-                .numberOfPeople(93)
-                .progressPeriod(90)
-                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
-                .contract("test@tesc.om")
-                .subject("수정된 제목")
-                .content("수정된 본문")
-                .build();
-
-        UpdateRecruitment updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
-
-        recruitmentsUsecase.update(recruitment.getId(), updateRecruitment);
+        savedRecruitment.update(updateRecruitment);
 
         // expected
-        String jsonString = objectMapper.writeValueAsString(updateRecruitment);
+        var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/1", recruitment.getId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        // TODO : ServiceTest?
+        assertNotEquals("勉強会", updateRecruitment.getRecruitmentCategories().name());
+        assertNotEquals("全体", updateRecruitment.getProgressMethods().name());
+        assertNotEquals("Java", updateRecruitment.getTechStacks().getFirst());
+        assertNotEquals("Backend", updateRecruitment.getRecruitmentPositions());
+        assertNotEquals(3, savedRecruitment.getNumberOfPeople());
+        assertNotEquals(3, updateRecruitment.getProgressPeriod());
+        assertNotEquals(LocalDate.of(2024, 10, 30), updateRecruitment.getRecruitmentDeadline());
+        assertNotEquals("test@tesc.om", updateRecruitment.getContract());
+        assertNotEquals("끝내주는 서비스를 개발 해 봅시다.", updateRecruitment.getSubject());
+        assertNotEquals("사실은 윈도우앱", updateRecruitment.getContent());
     }
-    // TODO : updateFail
+
+    @Transactional
+    @DisplayName("작성한 응모글의 수정 실패")
+    @Test
+    void updateFail() throws Exception {
+
+        // given
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        var updateRecruitmentRequest = getEmptyUpdateRecruitmentRequest();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
+
+        savedRecruitment.update(updateRecruitment);
+
+        // expected
+        var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
 
     @Transactional
     @DisplayName("메인 페이지에 필요한 응모글 목록을 불러올 수 있다.")
@@ -258,5 +275,28 @@ class RecruitmentsControllerTest {
         recruitmentPosition.makeRelationship(position, recruitment);
         recruitmentTechStack.makeRelationship(techStack, recruitment);
         return recruitment;
+    }
+
+    /**
+     * 갱신시에 사용되는 UpdateRecruitmentRequest 객체 생성
+     * @return UpdateRecruitmentRequest
+     */
+    private static UpdateRecruitmentRequest getUpdateRecruitmentRequest() {
+        return UpdateRecruitmentRequest.builder()
+                .recruitmentCategories(RecruitmentCategories.PROJECT)
+                .progressMethods(ProgressMethods.ONLINE)
+                .techStacks(List.of("Python", "Go"))
+                .recruitmentPositions(List.of("Backend22", "DevOps22", "Infra22"))
+                .numberOfPeople(93)
+                .progressPeriod(90)
+                .recruitmentDeadline(LocalDate.of(2024, 12, 25))
+                .contract("updatedEmail@test.com")
+                .subject("수정된 제목")
+                .content("수정된 본문")
+                .build();
+    }
+
+    private static UpdateRecruitmentRequest getEmptyUpdateRecruitmentRequest() {
+        return UpdateRecruitmentRequest.builder().build();
     }
 }

@@ -9,13 +9,16 @@ import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksReposit
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecruitmentsUsecase {
 
     private final RecruitmentsRepository recruitmentsRepository;
@@ -27,8 +30,14 @@ public class RecruitmentsUsecase {
 
         var recruitment = Recruitment.from(postRecruitment);
 
+        var techStacks = Optional.ofNullable(postRecruitment.getTechStacks())
+                .orElseThrow(RecruitmentInvalidRequestException::new);
+
+        var positions = Optional.ofNullable(postRecruitment.getRecruitmentPositions())
+                .orElseThrow(RecruitmentInvalidRequestException::new);
+
         // relationship between recruitment, techStack, and recruitmentTechStack.
-        postRecruitment.getTechStacks().stream()
+        techStacks.stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
                 .forEach(techStack -> {
                     var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
@@ -36,7 +45,7 @@ public class RecruitmentsUsecase {
                 });
 
         // relationship between recruitment, position, and recruitmentPosition.
-        postRecruitment.getRecruitmentPositions().stream()
+        positions.stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
@@ -72,10 +81,16 @@ public class RecruitmentsUsecase {
         var recruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
 
+        var techStacks = Optional.ofNullable(updateRecruitment.getTechStacks())
+                .orElseThrow(RecruitmentInvalidRequestException::new);
+
+        var positions = Optional.ofNullable(updateRecruitment.getRecruitmentPositions())
+                .orElseThrow(RecruitmentInvalidRequestException::new);
+
         recruitment.clearTechStacksAndPositions();
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
-        updateRecruitment.getTechStacks().stream()
+        techStacks.stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
                 .forEach(techStack -> {
                     var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
@@ -83,7 +98,7 @@ public class RecruitmentsUsecase {
                 });
 
          //relationship between recruitment, position, and recruitmentPosition.
-        updateRecruitment.getRecruitmentPositions().stream()
+        positions.stream()
                 .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
                 .forEach(position -> {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
