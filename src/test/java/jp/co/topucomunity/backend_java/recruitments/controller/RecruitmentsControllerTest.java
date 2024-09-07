@@ -145,7 +145,7 @@ class RecruitmentsControllerTest {
 
         // expected
         mockMvc.perform(MockMvcRequestBuilders.delete("/recruitments/{recruitmentId}", savedRecruitment.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Transactional
