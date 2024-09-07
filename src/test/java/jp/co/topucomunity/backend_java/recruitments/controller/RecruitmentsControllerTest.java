@@ -157,7 +157,7 @@ class RecruitmentsControllerTest {
         var recruitment = createRecruitment();
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
-        var updateRecruitmentRequest = getUpdateRecruitmentRequest();
+        var updateRecruitmentRequest = createUpdateRecruitmentRequest();
         var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
 
         savedRecruitment.update(updateRecruitment);
@@ -178,7 +178,7 @@ class RecruitmentsControllerTest {
     void updateFail() throws Exception {
 
         // given
-        var updateRecruitmentRequest = getUpdateRecruitmentRequest();
+        var updateRecruitmentRequest = createUpdateRecruitmentRequest();
 
         // expected
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
@@ -263,7 +263,7 @@ class RecruitmentsControllerTest {
      * 갱신시에 사용되는 UpdateRecruitmentRequest 객체 생성
      * @return UpdateRecruitmentRequest
      */
-    private static UpdateRecruitmentRequest getUpdateRecruitmentRequest() {
+    private static UpdateRecruitmentRequest createUpdateRecruitmentRequest() {
         return UpdateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.PROJECT)
                 .progressMethods(ProgressMethods.ONLINE)
