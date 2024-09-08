@@ -233,10 +233,6 @@ class RecruitmentsControllerTest {
 
     }
 
-    /**
-     *  테스트에 필요한 Recruitment 객체 생성
-     * @return Recruitment
-     */
     private static Recruitment createRecruitment() {
         var techStack = TechStack.from("Java");
         var position = Position.from("Backend");
@@ -258,10 +254,6 @@ class RecruitmentsControllerTest {
         return recruitment;
     }
 
-    /**
-     * 갱신시에 사용되는 UpdateRecruitmentRequest 객체 생성
-     * @return UpdateRecruitmentRequest
-     */
     private static UpdateRecruitmentRequest createUpdateRecruitmentRequest() {
         return UpdateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.PROJECT)

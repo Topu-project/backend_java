@@ -205,10 +205,6 @@ public class RecruitmentApiDocsTest {
                         )));
     }
 
-    /**
-     * 응모글 등록시에 사용되는 UpdateRecruitmentRequest 객체 생성
-     * @return CreateRecruitmentRequest
-     */
     private static CreateRecruitmentRequest createDefaultRecruitmentRequest() {
         return CreateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.STUDY)
@@ -224,10 +220,6 @@ public class RecruitmentApiDocsTest {
                 .build();
     }
 
-    /**
-     * 응모글 수정시에 사용되는 UpdateRecruitmentRequest 객체 생성
-     * @return UpdateRecruitmentRequest
-     */
     private static UpdateRecruitmentRequest createUpdateRecruitmentRequest() {
         return UpdateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.PROJECT)
