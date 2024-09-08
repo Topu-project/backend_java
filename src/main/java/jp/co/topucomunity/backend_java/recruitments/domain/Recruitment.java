@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -69,6 +70,22 @@ public class Recruitment extends BaseEntity {
                 .subject(postRecruitment.getSubject())
                 .content(postRecruitment.getContent())
                 .build();
+    }
+
+    public void update(UpdateRecruitment updateRecruitment) {
+        this.recruitmentCategories = updateRecruitment.getRecruitmentCategories();
+        this.progressMethods = updateRecruitment.getProgressMethods();
+        this.numberOfPeople = updateRecruitment.getNumberOfPeople();
+        this.progressPeriod = updateRecruitment.getProgressPeriod();
+        this.recruitmentDeadline = updateRecruitment.getRecruitmentDeadline();
+        this.contract = updateRecruitment.getContract();
+        this.subject = updateRecruitment.getSubject();
+        this.content = updateRecruitment.getContent();
+    }
+
+    public void clearTechStacksAndPositions() {
+        this.recruitmentTechStacks.clear();
+        this.recruitmentPositions.clear();
     }
 
     public void makeRelationshipWithRecruitmentTechStack(RecruitmentTechStack recruitmentTechStack) {

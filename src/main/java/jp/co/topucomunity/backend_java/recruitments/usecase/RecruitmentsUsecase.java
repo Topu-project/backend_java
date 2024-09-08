@@ -7,6 +7,7 @@ import jp.co.topucomunity.backend_java.recruitments.repository.PositionsReposito
 import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +66,31 @@ public class RecruitmentsUsecase {
                 .map(RecruitmentIndexPageResponse::from).toList();
     }
 
-    // TODO : Update
+    @Transactional
+    public void update(Long recruitmentId, UpdateRecruitment updateRecruitment) {
+
+        var recruitment = recruitmentsRepository.findById(recruitmentId)
+                .orElseThrow(RecruitmentNotFoundException::new);
+
+        recruitment.clearTechStacksAndPositions();
+
+        // relationship between recruitment, techStack, and recruitmentTechStack.
+        updateRecruitment.getTechStacks().stream()
+                .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
+                .forEach(techStack -> {
+                    var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+                    recruitmentTechStack.makeRelationship(techStack, recruitment);
+                });
+
+        //relationship between recruitment, position, and recruitmentPosition.
+        updateRecruitment.getRecruitmentPositions().stream()
+                .map(positionName -> positionsRepository.findPositionByPositionName(positionName).orElse(Position.from(positionName)))
+                .forEach(position -> {
+                    var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+                    recruitmentPosition.makeRelationship(position, recruitment);
+                });
+
+        recruitment.update(updateRecruitment);
+    }
 
 }

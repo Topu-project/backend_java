@@ -1,10 +1,12 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.usecase.RecruitmentsUsecase;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,10 @@ public class RecruitmentsController {
         return recruitmentsUsecase.getRecruitments();
     }
 
-    // TODO : updateByRecruitmentId
+    @PutMapping("/{recruitmentId}")
+    public void updateByRecruitmentId(@PathVariable Long recruitmentId, @RequestBody UpdateRecruitmentRequest request) {
+        recruitmentsUsecase.update(recruitmentId, UpdateRecruitment.from(request));
+    }
 
     // TODO : getTechStacks
 }
