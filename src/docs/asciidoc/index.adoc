@@ -20,3 +20,8 @@ include::delete-recruitment.adoc[]
 
 === Get Recruitment by id
 include::get-recruitment.adoc[]
+
+---
+
+=== Update Recruitment
+include::update-recruitment.adoc[]

@@ -161,9 +161,9 @@ class RecruitmentsControllerTest {
 
         savedRecruitment.update(updateRecruitment);
 
-        // when
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
+        // expected
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))

@@ -2,10 +2,12 @@ package jp.co.topucomunity.backend_java.recruitments.apidocs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
+import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -143,18 +145,7 @@ public class RecruitmentApiDocsTest {
     void postRecruitment() throws Exception {
 
         // given
-        var request = CreateRecruitmentRequest.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
-                .techStacks(List.of("Java", "Spring", "JPA"))
-                .recruitmentPositions(List.of("Backend", "DevOps", "Infra"))
-                .numberOfPeople(3)
-                .progressPeriod(6)
-                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
-                .contract("test@tesc.om")
-                .subject("새로운 서비스를 개발하실 분을 모집합니다.")
-                .content("현실은 SI, SES, 개레거시지롱")
-                .build();
+        var request = createDefaultRecruitmentRequest();
         var jsonString = objectMapper.writeValueAsString(request);
 
         // expected
@@ -175,5 +166,80 @@ public class RecruitmentApiDocsTest {
                                 fieldWithPath("subject").description("The subject of the recruitment."),
                                 fieldWithPath("content").description("The content of the recruitment.")
                         )));
+    }
+
+    @DisplayName("작성한 응모글을 수정한다.")
+    @Test
+    void updateRecruitment() throws Exception {
+
+        // given
+        var createRecruitmentRequest = createDefaultRecruitmentRequest();
+        var postRecruitment = PostRecruitment.from(createRecruitmentRequest);
+        var recruitment = Recruitment.from(postRecruitment);
+        recruitmentsRepository.save(recruitment);
+
+        var request = createUpdateRecruitmentRequest();
+
+        var jsonString = objectMapper.writeValueAsString(request);
+
+        // expected
+        mvc.perform(RestDocumentationRequestBuilders.put("/recruitments/{recruitmentId}", recruitment.getId())
+                        .content(jsonString)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("update-recruitment",
+                        RequestDocumentation.pathParameters(
+                                RequestDocumentation.parameterWithName("recruitmentId").description("응모글 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("recruitmentCategories").description("응모 카테고리"),
+                                fieldWithPath("progressMethods").description("진행 방법"),
+                                fieldWithPath("techStacks").description("기술스택"),
+                                fieldWithPath("recruitmentPositions").description("응모 포지션"),
+                                fieldWithPath("numberOfPeople").description("모집 인원"),
+                                fieldWithPath("progressPeriod").description("진행 기간"),
+                                fieldWithPath("recruitmentDeadline").description("마감일"),
+                                fieldWithPath("contract").description("연락처"),
+                                fieldWithPath("subject").description("제목"),
+                                fieldWithPath("content").description("내용")
+                        )));
+    }
+
+    /**
+     * 응모글 등록시에 사용되는 UpdateRecruitmentRequest 객체 생성
+     * @return CreateRecruitmentRequest
+     */
+    private static CreateRecruitmentRequest createDefaultRecruitmentRequest() {
+        return CreateRecruitmentRequest.builder()
+                .recruitmentCategories(RecruitmentCategories.STUDY)
+                .progressMethods(ProgressMethods.ALL)
+                .techStacks(List.of("Java", "Spring", "JPA"))
+                .recruitmentPositions(List.of("Backend", "DevOps", "Infra"))
+                .numberOfPeople(3)
+                .progressPeriod(6)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("새로운 서비스를 개발하실 분을 모집합니다.")
+                .content("현실은 SI, SES, 개레거시지롱")
+                .build();
+    }
+
+    /**
+     * 응모글 수정시에 사용되는 UpdateRecruitmentRequest 객체 생성
+     * @return UpdateRecruitmentRequest
+     */
+    private static UpdateRecruitmentRequest createUpdateRecruitmentRequest() {
+        return UpdateRecruitmentRequest.builder()
+                .recruitmentCategories(RecruitmentCategories.PROJECT)
+                .progressMethods(ProgressMethods.ONLINE)
+                .techStacks(List.of("Python", "Go"))
+                .recruitmentPositions(List.of("Backend22", "DevOps22", "Infra22"))
+                .numberOfPeople(93)
+                .progressPeriod(90)
+                .recruitmentDeadline(LocalDate.of(2024, 12, 25))
+                .contract("updatedEmail@test.com")
+                .subject("수정된 제목")
+                .content("수정된 본문")
+                .build();
     }
 }
