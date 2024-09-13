@@ -14,18 +14,22 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
+
+    private String sub;
 
     @Column(unique = true, nullable = false)
     private String email;
 
     @Builder
-    private User(String email) {
+    private User(String email, String sub) {
         this.email = email;
+        this.sub = sub;
     }
 
-    public static User from(String email) {
+    public static User of(String sub, String email) {
         return User.builder()
+                .sub(sub)
                 .email(email)
                 .build();
     }
