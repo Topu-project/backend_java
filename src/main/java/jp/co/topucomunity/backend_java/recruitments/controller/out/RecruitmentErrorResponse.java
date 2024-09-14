@@ -8,8 +8,8 @@ import java.util.Map;
 
 /**
  * {
- *   "error_message": "잘못된 요청입니다",
- *   "validation_errors: {
+ *   "errorMessage": "잘못된 요청입니다",
+ *   "validationErrors: {
  *      "title": "1글자 입력해주세요",
  *      "contact": "메일 주소를 제대로 입력해 주세요"
  *   },

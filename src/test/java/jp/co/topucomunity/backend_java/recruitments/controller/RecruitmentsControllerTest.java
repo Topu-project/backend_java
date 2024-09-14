@@ -74,15 +74,39 @@ class RecruitmentsControllerTest {
 
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
-                        .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isOk())
                 .andDo(print());
 
     }
 
-    // @DisplayName("필수 항목들을 입력하지 않으면 응모글을 작성할 수 없다.")
     // TODO : 응모글 작성 실패 케이스 작성
+    @DisplayName("필수 항목들을 입력하지 않으면 응모글을 작성할 수 없다.")
+    @Test
+    void postRecruitmentFail() throws Exception {
+
+        // given
+        var request = CreateRecruitmentRequest.builder().build();
+        var jsonString = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("$.errorMessage").value("모든 항목을 입력해야 합니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("카테고리를 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressMethods").value("진행방법을 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.techStacks").value("기술스택을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("응모 포지션을 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.contract").value("올바른 메일주소를 입력해 주세요."))
+                .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
+                .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
+                .andDo(print());
+    }
 
     // @DisplayName("응모글을 작성할 때 포지션을 선택해서 등록하면 포지션도 같이 등록 된다.")
     // TODO : 포지션 등록 확인
@@ -179,16 +203,15 @@ class RecruitmentsControllerTest {
         // given
         var updateRecruitmentRequest = createUpdateRecruitmentRequest();
 
-        // expected
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
+        // expected
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", updateRecruitmentRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
-
 
     @Transactional
     @DisplayName("메인 페이지에 필요한 응모글 목록을 불러올 수 있다.")

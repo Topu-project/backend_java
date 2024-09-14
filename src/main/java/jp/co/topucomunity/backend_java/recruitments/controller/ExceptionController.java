@@ -27,7 +27,7 @@ public class ExceptionController {
     @ResponseBody
     public RecruitmentErrorResponse invalidRequestHandler(MethodArgumentNotValidException e) {
 
-        RecruitmentErrorResponse errorResponse = RecruitmentErrorResponse.from(e.getMessage());
+        RecruitmentErrorResponse errorResponse = RecruitmentErrorResponse.from("모든 항목을 입력해야 합니다.");
 
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
             errorResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage());

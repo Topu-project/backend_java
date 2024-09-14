@@ -1,9 +1,9 @@
 package jp.co.topucomunity.backend_java.recruitments.controller.in;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.Builder;
@@ -22,10 +22,10 @@ public class UpdateRecruitmentRequest {
     @NotNull(message = "진행방법을 선택해 주세요.")
     private ProgressMethods progressMethods;
 
-    @Size(min = 1, message = "기술스택을 입력해 주세요.")
+    @NotNull(message = "기술스택을 입력해 주세요.") @Valid
     private List<String> techStacks;
 
-    @Size(min = 1, message = "응모 포지션을 선택해 주세요.")
+    @NotNull(message = "응모 포지션을 선택해 주세요.") @Valid
     private List<String> recruitmentPositions;
 
     @NotNull(message = "모집 인원을 입력해 주세요.")
@@ -38,7 +38,7 @@ public class UpdateRecruitmentRequest {
     private LocalDate recruitmentDeadline;
 
     @Email
-    @NotBlank(message = "연락처를 입력해 주세요.")
+    @NotBlank(message = "올바른 메일주소를 입력해 주세요.")
     private String contract;
 
     @NotBlank(message = "제목을 입력해 주세요.")
