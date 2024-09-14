@@ -1,6 +1,5 @@
-package jp.co.topucomunity.backend_java.recruitments.usecase;
+package jp.co.topucomunity.backend_java.recruitments.exception;
 
-import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentException;
 import org.springframework.http.HttpStatus;
 
 public class RecruitmentInvalidRequestException extends RecruitmentException {

@@ -20,19 +20,23 @@ import java.util.Map;
 public class RecruitmentErrorResponse {
 
     // TODO : change variable name -> errorMessage
-    private final String message;
+    private final String errorMessage;
     private final Map<String, String> validationErrors;
 
     @Builder
-    private RecruitmentErrorResponse(String message, Map<String, String> validationErrors) {
-        this.message = message;
-        this.validationErrors = validationErrors;
+    private RecruitmentErrorResponse(String errorMessage, Map<String, String> validationErrors) {
+        this.errorMessage = errorMessage;
+        this.validationErrors = validationErrors != null ? validationErrors : new HashMap<>();
     }
 
-    public static RecruitmentErrorResponse from(String message) {
+    public static RecruitmentErrorResponse from(String errorMessage) {
         return RecruitmentErrorResponse.builder()
-                .message(message)
+                .errorMessage(errorMessage)
                 .validationErrors(new HashMap<>())
                 .build();
+    }
+
+    public void addValidation(String fieldName, String message) {
+        validationErrors.put(fieldName, message);
     }
 }
