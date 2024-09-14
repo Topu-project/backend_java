@@ -1,4 +1,4 @@
-package jp.co.topucomunity.backend_java.users.domains;
+package jp.co.topucomunity.backend_java.users.exceptions;
 
 public abstract class UsersException extends RuntimeException {
 

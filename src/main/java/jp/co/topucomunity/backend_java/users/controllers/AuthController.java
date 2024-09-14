@@ -26,4 +26,7 @@ public class AuthController {
     }
 
     // Todo : Get User info
+
+    // Todo : Sign up User info
+
 }

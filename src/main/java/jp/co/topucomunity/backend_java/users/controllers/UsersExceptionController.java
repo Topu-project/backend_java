@@ -1,7 +1,7 @@
 package jp.co.topucomunity.backend_java.users.controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.topucomunity.backend_java.users.domains.UsersException;
+import jp.co.topucomunity.backend_java.users.exceptions.UsersException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,7 @@
 package jp.co.topucomunity.backend_java.users.domains;
 
 import jakarta.persistence.*;
+import jp.co.topucomunity.backend_java.recruitments.domain.Position;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,22 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    private String nickname;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Position position;
+
+    private String affiliation;
+
+    private Boolean isPublicAffiliation;
+
+    private Integer personalHistory;
+
+    @Lob
+    private String SelfIntroduction;
+
+    private String links;
 
     @Builder
     private User(String email, String sub) {

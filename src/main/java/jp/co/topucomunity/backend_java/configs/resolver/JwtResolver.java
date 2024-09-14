@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.topucomunity.backend_java.users.domains.UserSession;
-import jp.co.topucomunity.backend_java.users.usecases.UnAuthenticationException;
+import jp.co.topucomunity.backend_java.users.exceptions.UnAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
