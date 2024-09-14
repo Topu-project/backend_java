@@ -172,7 +172,7 @@ class RecruitmentsControllerTest {
     }
 
     @Transactional
-    @DisplayName("작성한 응모글을 수정한다")
+    @DisplayName("작성한 응모글을 수정한다.")
     @Test
     void updateRecruitment() throws Exception {
 
@@ -196,20 +196,36 @@ class RecruitmentsControllerTest {
     }
 
     @Transactional
-    @DisplayName("작성한 응모글의 수정 실패")
+    @DisplayName("필수 항목들을 입력하지 않으면 응모글을 수정할 수 없다.")
     @Test
     void updateFail() throws Exception {
 
         // given
-        var updateRecruitmentRequest = createUpdateRecruitmentRequest();
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        var updateRecruitmentRequest = UpdateRecruitmentRequest.builder().build();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
+
+        savedRecruitment.update(updateRecruitment);
 
         var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
 
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", updateRecruitmentRequest)
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
-                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage").value("모든 항목을 입력해야 합니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("카테고리를 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressMethods").value("진행방법을 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.techStacks").value("기술스택을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("응모 포지션을 선택해 주세요."))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.contract").value("올바른 메일주소를 입력해 주세요."))
+                .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
+                .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
                 .andDo(print());
     }
 
