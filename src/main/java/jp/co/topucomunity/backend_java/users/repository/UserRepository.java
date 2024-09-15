@@ -1,6 +1,6 @@
-package jp.co.topucomunity.backend_java.users.repositories;
+package jp.co.topucomunity.backend_java.users.repository;
 
-import jp.co.topucomunity.backend_java.users.domains.User;
+import jp.co.topucomunity.backend_java.users.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

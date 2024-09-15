@@ -1,11 +1,11 @@
-package jp.co.topucomunity.backend_java.configs.resolver;
+package jp.co.topucomunity.backend_java.config.resolver;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import jp.co.topucomunity.backend_java.users.domains.UserSession;
-import jp.co.topucomunity.backend_java.users.exceptions.UnAuthenticationException;
+import jp.co.topucomunity.backend_java.users.domain.UserSession;
+import jp.co.topucomunity.backend_java.users.exception.UnAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;

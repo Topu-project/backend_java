@@ -1,4 +1,4 @@
-package jp.co.topucomunity.backend_java.users.exceptions;
+package jp.co.topucomunity.backend_java.users.exception;
 
 import org.springframework.http.HttpStatus;
 

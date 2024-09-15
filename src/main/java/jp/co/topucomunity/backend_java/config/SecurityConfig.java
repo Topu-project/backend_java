@@ -1,8 +1,8 @@
-package jp.co.topucomunity.backend_java.configs;
+package jp.co.topucomunity.backend_java.config;
 
-import jp.co.topucomunity.backend_java.configs.resolver.JwtResolver;
-import jp.co.topucomunity.backend_java.users.controllers.OAuth2LoginSuccessController;
-import jp.co.topucomunity.backend_java.users.usecases.GoogleOAuth2UserUsecase;
+import jp.co.topucomunity.backend_java.config.resolver.JwtResolver;
+import jp.co.topucomunity.backend_java.users.controller.OAuth2LoginSuccessController;
+import jp.co.topucomunity.backend_java.users.usecase.GoogleOAuth2UserUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

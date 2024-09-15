@@ -1,4 +1,4 @@
-package jp.co.topucomunity.backend_java.users.domains;
+package jp.co.topucomunity.backend_java.users.domain;
 
 import jakarta.persistence.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.Position;

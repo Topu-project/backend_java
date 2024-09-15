@@ -1,4 +1,4 @@
-package jp.co.topucomunity.backend_java.configs;
+package jp.co.topucomunity.backend_java.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

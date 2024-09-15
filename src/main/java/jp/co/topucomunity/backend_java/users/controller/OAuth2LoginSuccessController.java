@@ -1,10 +1,10 @@
-package jp.co.topucomunity.backend_java.users.controllers;
+package jp.co.topucomunity.backend_java.users.controller;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.topucomunity.backend_java.configs.OAuth2UserPrincipal;
+import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;

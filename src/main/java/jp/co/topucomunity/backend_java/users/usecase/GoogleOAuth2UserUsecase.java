@@ -1,10 +1,10 @@
-package jp.co.topucomunity.backend_java.users.usecases;
+package jp.co.topucomunity.backend_java.users.usecase;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jp.co.topucomunity.backend_java.configs.OAuth2UserPrincipal;
-import jp.co.topucomunity.backend_java.users.domains.User;
-import jp.co.topucomunity.backend_java.users.repositories.UserRepository;
+import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
+import jp.co.topucomunity.backend_java.users.domain.User;
+import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 

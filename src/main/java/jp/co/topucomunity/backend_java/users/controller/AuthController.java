@@ -1,7 +1,7 @@
-package jp.co.topucomunity.backend_java.users.controllers;
+package jp.co.topucomunity.backend_java.users.controller;
 
-import jp.co.topucomunity.backend_java.configs.OAuth2UserPrincipal;
-import jp.co.topucomunity.backend_java.users.domains.UserSession;
+import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
+import jp.co.topucomunity.backend_java.users.domain.UserSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
