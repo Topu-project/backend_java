@@ -5,10 +5,13 @@ import jp.co.topucomunity.backend_java.users.controllers.OAuth2LoginSuccessContr
 import jp.co.topucomunity.backend_java.users.usecases.GoogleOAuth2UserUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -33,6 +36,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.cors(cors -> cors.configurationSource(configurationSource()));
         http.authorizeHttpRequests(httpRequest -> httpRequest
                 .requestMatchers("/auth/login").authenticated()
+                .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().permitAll());
         http.oauth2Login(oauth2 -> {
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
@@ -58,6 +62,13 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(jwtResolver);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console());
     }
 
 }
