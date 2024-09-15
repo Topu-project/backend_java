@@ -12,6 +12,9 @@ mise i
 mise run up
 ```
 
+#### Google OAuth2 設定
+- `client_id`, `client_secret` は confluenceを 参照
+
 ## Architecture
 - 最初はレイヤードアーキテクチャー
 - 後でヘキサゴナルアーキテクチャーに変更
