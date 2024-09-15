@@ -31,23 +31,43 @@ public class User {
 
     private Boolean isPublicAffiliation;
 
-    private Integer personalHistory;
+    private Integer personalHistoryYear;
 
     @Lob
-    private String SelfIntroduction;
+    private String selfIntroduction;
 
     private String links;
 
     @Builder
-    private User(String email, String sub) {
-        this.email = email;
+    public User(String sub, String email, String nickname, Position position, String affiliation, Boolean isPublicAffiliation, Integer personalHistoryYear, String selfIntroduction, String links) {
         this.sub = sub;
+        this.email = email;
+        this.nickname = nickname;
+        this.position = position;
+        this.affiliation = affiliation;
+        this.isPublicAffiliation = isPublicAffiliation;
+        this.personalHistoryYear = personalHistoryYear;
+        this.selfIntroduction = selfIntroduction;
+        this.links = links;
     }
 
     public static User of(String sub, String email) {
         return User.builder()
                 .sub(sub)
                 .email(email)
+                .build();
+    }
+
+    public static User createFirstLoggedInUser(String email, String nickname, Position position, String affiliation, Boolean isPublicAffiliation, Integer personalHistoryYear, String selfIntroduction, String links) {
+        return User.builder()
+                .email(email)
+                .nickname(nickname)
+                .position(position)
+                .affiliation(affiliation)
+                .isPublicAffiliation(isPublicAffiliation)
+                .personalHistoryYear(personalHistoryYear)
+                .selfIntroduction(selfIntroduction)
+                .links(links)
                 .build();
     }
 }

@@ -9,19 +9,43 @@
 == Recruitment
 
 === Post recruitment
+
 include::post-recruitment.adoc[]
 
 ---
 
 === Delete recruitment by id
+
 include::delete-recruitment.adoc[]
 
 ---
 
 === Get Recruitment by id
+
 include::get-recruitment.adoc[]
 
 ---
 
 === Update Recruitment
+
 include::update-recruitment.adoc[]
+
+---
+
+== User
+
+=== Get user by id
+
+include::get-user.adoc[]
+
+---
+
+=== Get user by id - fail
+
+include::get-user-fail.adoc[]
+
+---
+
+
+
+
