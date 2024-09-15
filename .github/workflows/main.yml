@@ -3,6 +3,7 @@ name: topu
 on:
   pull_request:
     types: [opened, reopened]
+  push:
 
 permissions:
   id-token: write
