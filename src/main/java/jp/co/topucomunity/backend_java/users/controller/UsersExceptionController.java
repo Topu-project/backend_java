@@ -1,11 +1,14 @@
 package jp.co.topucomunity.backend_java.users.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.topucomunity.backend_java.users.exception.UsersException;
+import jp.co.topucomunity.backend_java.users.controller.out.UserErrorResponse;
+import jp.co.topucomunity.backend_java.users.exception.UnAuthenticationException;
+import jp.co.topucomunity.backend_java.users.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,9 +19,17 @@ import java.net.URI;
 @RestControllerAdvice
 public class UsersExceptionController {
 
-    @ExceptionHandler(UsersException.class)
-    public void usersExceptionHandler(UsersException e, HttpServletResponse response) {
-        log.error("[Auth Exception] : {}", e.getMessage());
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<UserErrorResponse> usersExceptionHandler(UserException e) {
+        log.error("[UserException] : {}", e.getMessage());
+        return ResponseEntity
+                .status(e.getStatusCode())
+                .body(UserErrorResponse.from(e.getMessage()));
+    }
+
+    @ExceptionHandler(UnAuthenticationException.class)
+    public void usersExceptionHandler(UnAuthenticationException e, HttpServletResponse response) {
+        log.error("[UnAuthenticationException] : {}", e.getMessage());
         resetAuthentication();
         redirectPermanently(response, disableCookie());
     }

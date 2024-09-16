@@ -3,6 +3,7 @@ name: topu
 on:
   pull_request:
     types: [opened, reopened]
+  push:
 
 permissions:
   id-token: write
@@ -22,6 +23,17 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
+
+      - name: Set secrets
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}  # GitHub Secrets에서 가져온 값 설정
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          JWT_SIGN_KEY: ${{ secrets.JWT_SIGN_KEY }}
+        run: |
+          # application-local.properties 파일에 client_id를 설정
+          echo "spring.security.oauth2.client.registration.google.client-id=$CLIENT_ID" >> src/main/resources/application-local.properties
+          echo "spring.security.oauth2.client.registration.google.client-secret=$CLIENT_SECRET" >> src/main/resources/application-local.properties
+          echo "jwt.sign.key=JWT_SIGN_KEY" >> src/main/resources/application-local.properties
 
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
