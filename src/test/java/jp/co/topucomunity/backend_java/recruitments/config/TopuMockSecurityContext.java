@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +48,8 @@ public class TopuMockSecurityContext implements WithSecurityContextFactory<TopuM
                 annotation.nameAttributeKey()
         );
 
-        var secretKey = Keys.hmacShaKeyFor(jwtSignKey.getBytes());
+        var encodedKey = Base64.getEncoder().encode(jwtSignKey.getBytes());
+        var secretKey = Keys.hmacShaKeyFor(encodedKey);
 
         var jws = Jwts.builder()
                 .id(String.valueOf(savedUser.getUserId()))
