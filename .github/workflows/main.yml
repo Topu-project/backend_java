@@ -2,8 +2,9 @@ name: topu
 
 on:
   pull_request:
-    types: [opened, reopened]
-  push:
+    types: [opened, reopened, synchronize]
+  merge_group:
+    types: [checks_requested]
 
 permissions:
   id-token: write
@@ -49,6 +50,7 @@ jobs:
 
   deploy-docs:
     runs-on: ubuntu-latest
+    if: github.event_name == 'merge_group' && github.ref == 'refs/heads/main'
     needs: build
     environment:
       name: github-pages
