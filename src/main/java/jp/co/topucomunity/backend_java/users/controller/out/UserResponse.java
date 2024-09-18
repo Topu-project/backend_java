@@ -39,10 +39,10 @@ public class UserResponse {
                 .nickname(user.getNickname())
                 .position(user.getPosition().getPositionName())
                 .affiliation(user.getAffiliation())
-                .isPublicAffiliation(user.getIsPublicAffiliation())
+                .isPublicAffiliation(user.isPublicAffiliation())
                 .personalHistoryYear(user.getPersonalHistoryYear())
                 .selfIntroduction(user.getSelfIntroduction())
-                .links(Arrays.stream(user.getLinks().split(",")).map(String::trim).toList())
+                .links(user.getLinks() == null || user.getLinks().isBlank() ? List.of() : Arrays.stream(user.getLinks().split(",")).map(String::trim).toList())
                 .build();
     }
 }

@@ -977,7 +977,7 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_http_request_5"><a class="link" href="#_http_request_5">http request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /auth/1 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /auth/2 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1019,15 +1019,15 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 463
+Content-Length: 464
 
 {
-  "userId" : 1,
+  "userId" : 2,
   "email" : "test-user@test.com",
   "nickname" : "test-user",
   "position" : "Backend",
   "affiliation" : "우아한형제들",
-  "isPublicAffiliation" : true,
+  "isPublicAffiliation" : false,
   "personalHistoryYear" : 5,
   "selfIntroduction" : "안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.",
   "links" : [ "https://github.com/wooah/backend/god/king/good", "https://github.com/wooah/backend/god/king/good" ]
@@ -1195,7 +1195,7 @@ Content-Length: 102
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-16 00:41:39 +0900
+Last updated 2024-09-16 12:13:02 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

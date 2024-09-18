@@ -46,6 +46,10 @@ include::get-user-fail.adoc[]
 
 ---
 
+=== Create user - first login
+include::create-user.adoc[]
+
+---
 
 
 
