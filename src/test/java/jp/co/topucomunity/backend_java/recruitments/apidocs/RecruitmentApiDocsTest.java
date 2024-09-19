@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -85,6 +86,8 @@ public class RecruitmentApiDocsTest {
         mvc.perform(RestDocumentationRequestBuilders.delete("/recruitments/{recruitmentId}", savedRecruitment.getId()))
                 .andExpect(status().isNoContent())
                 .andDo(MockMvcRestDocumentation.document("delete-recruitment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         RequestDocumentation.pathParameters(
                                 RequestDocumentation.parameterWithName("recruitmentId").description("응모 ID")
                         )
@@ -121,6 +124,8 @@ public class RecruitmentApiDocsTest {
         mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/{recruitmentId}", savedRecruitment.getId()))
                 .andExpect(status().isOk())
                 .andDo(document("get-recruitment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         RequestDocumentation.pathParameters(
                                 RequestDocumentation.parameterWithName("recruitmentId").description("응모글 ID")
                         ),
@@ -154,17 +159,19 @@ public class RecruitmentApiDocsTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("post-recruitment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestFields(
-                                fieldWithPath("recruitmentCategories").description("The category of the recruitment."),
-                                fieldWithPath("progressMethods").description("The methods of progress."),
-                                fieldWithPath("techStacks").description("The list of tech stacks required."),
-                                fieldWithPath("recruitmentPositions").description("The positions available for recruitment."),
-                                fieldWithPath("numberOfPeople").description("The number of people to be recruited."),
-                                fieldWithPath("progressPeriod").description("The period of progress in months."),
-                                fieldWithPath("recruitmentDeadline").description("The deadline for recruitment."),
-                                fieldWithPath("contract").description("Contact email."),
-                                fieldWithPath("subject").description("The subject of the recruitment."),
-                                fieldWithPath("content").description("The content of the recruitment.")
+                                fieldWithPath("recruitmentCategories").description("응모 카테고리"),
+                                fieldWithPath("progressMethods").description("응모 방법"),
+                                fieldWithPath("techStacks").description("기술 스택"),
+                                fieldWithPath("recruitmentPositions").description("응모 포지션"),
+                                fieldWithPath("numberOfPeople").description("모집 인원"),
+                                fieldWithPath("progressPeriod").description("진행 기간"),
+                                fieldWithPath("recruitmentDeadline").description("응모 마감일"),
+                                fieldWithPath("contract").description("연락처"),
+                                fieldWithPath("subject").description("제목"),
+                                fieldWithPath("content").description("내용")
                         )));
     }
 
@@ -188,6 +195,8 @@ public class RecruitmentApiDocsTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("update-recruitment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         RequestDocumentation.pathParameters(
                                 RequestDocumentation.parameterWithName("recruitmentId").description("응모글 ID")
                         ),
