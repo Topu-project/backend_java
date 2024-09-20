@@ -30,6 +30,10 @@ include::get-recruitment.adoc[]
 
 include::update-recruitment.adoc[]
 
+=== Get tech stacks
+include::get-tech-stacks.adoc[]
+
+
 ---
 
 == User
