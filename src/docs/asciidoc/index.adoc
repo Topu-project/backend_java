@@ -30,6 +30,9 @@ include::get-recruitment.adoc[]
 
 include::update-recruitment.adoc[]
 
+=== Get Positions
+include::get-positions.adoc[]
+
 ---
 
 == User
