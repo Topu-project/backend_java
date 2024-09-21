@@ -101,7 +101,7 @@ class RecruitmentsControllerTest {
                 .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.contract").value("올바른 메일주소를 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.contract").value("이메일을 입력해 주세요."))
                 .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
                 .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
                 .andDo(print());
@@ -222,7 +222,7 @@ class RecruitmentsControllerTest {
                 .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.contract").value("올바른 메일주소를 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.contract").value("이메일을 입력해 주세요."))
                 .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
                 .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
                 .andDo(print());
