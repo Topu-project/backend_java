@@ -45,10 +45,10 @@ class TechStacksControllerTest {
         // expected
         mockMvc.perform(MockMvcRequestBuilders.get("/tech-stacks"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(3)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.is("Spring")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1]", Matchers.is("Kotlin")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[2]", Matchers.is("Ktor")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.techStacks.size()", Matchers.is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.techStacks.[0]", Matchers.is("Spring")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.techStacks.[1]", Matchers.is("Kotlin")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.techStacks.[2]", Matchers.is("Ktor")))
                 .andDo(print());
 
     }

@@ -1,0 +1,19 @@
+### Create user
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+Cookie: SESSION=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoiMTA3MTU2OTExMjI1NDA0NjY0NjE3IiwiZXhwIjoxNzI2NDk4MzA5LCJpYXQiOjE3MjY0OTY1MDl9.miIaE28ORz6Uwv6FiplMlzCPMsv30xgbpbbbHwhEC6s
+
+{
+  "nickname": "Hyundai",
+  "positionName": "Engineering",
+  "personalHistoryYear": 33,
+  "techStackNames": [
+    "Motor",
+    "Engine",
+    "Battery"
+  ]
+}
+
+### Login
+GET http://localhost:8080/auth/login
+Cookie: SESSION=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoiMTA3MTU2OTExMjI1NDA0NjY0NjE3IiwiZXhwIjoxNzI2NDk4MzA5LCJpYXQiOjE3MjY0OTY1MDl9.miIaE28ORz6Uwv6FiplMlzCPMsv30xgbpbbbHwhEC6s

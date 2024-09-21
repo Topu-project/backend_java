@@ -2,16 +2,16 @@ package jp.co.topucomunity.backend_java.users.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class UnAuthenticationException extends UsersException {
+public class UnAuthenticationException extends UserException {
 
-    private static final String UN_AUTHENTICATION = "인증에 실패 했습니다.";
+    private static final String MESSAGE = "인증에 실패 했습니다.";
 
     public UnAuthenticationException() {
-        super(UN_AUTHENTICATION);
+        super(MESSAGE);
     }
 
     public UnAuthenticationException(Throwable cause) {
-        super(UN_AUTHENTICATION, cause);
+        super(MESSAGE, cause);
     }
 
     @Override
