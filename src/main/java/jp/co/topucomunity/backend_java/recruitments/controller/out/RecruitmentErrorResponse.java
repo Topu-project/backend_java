@@ -19,7 +19,6 @@ import java.util.Map;
 @Getter
 public class RecruitmentErrorResponse {
 
-    // TODO : change variable name -> errorMessage
     private final String errorMessage;
     private final Map<String, String> validationErrors;
 
@@ -37,6 +36,6 @@ public class RecruitmentErrorResponse {
     }
 
     public void addValidation(String fieldName, String message) {
-        validationErrors.put(fieldName, message);
+        this.validationErrors.put(fieldName, message);
     }
 }

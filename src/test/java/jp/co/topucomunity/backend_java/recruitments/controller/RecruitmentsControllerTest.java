@@ -81,7 +81,6 @@ class RecruitmentsControllerTest {
 
     }
 
-    // TODO : 응모글 작성 실패 케이스 작성
     @DisplayName("필수 항목들을 입력하지 않으면 응모글을 작성할 수 없다.")
     @Test
     void postRecruitmentFail() throws Exception {

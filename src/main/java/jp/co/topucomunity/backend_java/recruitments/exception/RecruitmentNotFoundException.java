@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class RecruitmentNotFoundException extends RecruitmentException {
 
-    public static final String RECRUITMENT_NOT_FOUND = "응모글을 찾을 수 없습니다.";
+    public static final String RECRUITMENT_NOT_FOUND = "recruitment.notFound";
 
     public RecruitmentNotFoundException() {
         super(RECRUITMENT_NOT_FOUND);
