@@ -36,7 +36,7 @@ public class CreateRecruitmentRequest {
     @NotNull(message = "{recruitment.validation.notNull.deadline}")
     private LocalDate recruitmentDeadline;
 
-    @Email
+    @Email(message = "{recruitment.validation.email.invalid}")
     @NotBlank(message = "{recruitment.validation.notBlank.contract}")
     private String contract;
 
