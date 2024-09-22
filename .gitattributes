@@ -1,0 +1,2 @@
+# `.properties` 파일을 텍스트 파일로 처리하고, LF 라인 엔딩 사용
+*.properties text eol=lf
