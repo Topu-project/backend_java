@@ -8,15 +8,15 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class RecruitmentRepositoryImpl implements RecruitmentRepositoryCustom {
+public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Recruitment> getRecruitmentList(int page) {
+    public List<Recruitment> getList(int page) {
         return jpaQueryFactory.selectFrom(QRecruitment.recruitment)
-                .limit(10)
-                .offset((page - 1) * 10L)
+//                .limit(10)
+//                .offset((page - 1) * 10L)
                 .fetch();
     }
 }

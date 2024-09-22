@@ -196,15 +196,7 @@ class RecruitmentsControllerTest {
     void getRecruitments() throws Exception {
         // given
         // TODO : Require cleansing
-        var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
-        var recruitment1 = createRecruitment(techStack, position, RecruitmentCategories.STUDY, ProgressMethods.ALL);
-        var recruitmentPosition = RecruitmentPosition.of(position, recruitment1);
-        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment1);
-        recruitmentPosition.makeRelationship(position, recruitment1);
-        recruitmentTechStack.makeRelationship(techStack, recruitment1);
-
-
+        var recruitment1 = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
 
         var techStack2 = TechStack.from("Kotlin");
         var position2 = Position.from("BackendEngineer");
@@ -227,7 +219,7 @@ class RecruitmentsControllerTest {
         var savedRecruitments = recruitmentsRepository.saveAll(List.of(recruitment1, recruitment2));
 
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(2)))
@@ -253,10 +245,10 @@ class RecruitmentsControllerTest {
                 .content("사실은 윈도우앱")
                 .recruitmentTechStacks(new ArrayList<>())
                 .build();
-//        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
-//        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
-//        recruitmentPosition.makeRelationship(position, recruitment);
-//        recruitmentTechStack.makeRelationship(techStack, recruitment);
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
         return recruitment;
     }
 

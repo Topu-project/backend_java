@@ -1,6 +1,7 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
@@ -37,8 +38,7 @@ public class RecruitmentsController {
     }
 
     @GetMapping("/query")// TODO : Paging, Search, QueryDSL
-//    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
-    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage() {
+    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
         return recruitmentsUsecase.getRecruitments();
     }
 

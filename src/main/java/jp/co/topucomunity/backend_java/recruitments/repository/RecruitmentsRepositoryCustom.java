@@ -4,7 +4,8 @@ import jp.co.topucomunity.backend_java.recruitments.domain.Recruitment;
 
 import java.util.List;
 
-public interface RecruitmentRepositoryCustom {
 
-    List<Recruitment> getRecruitmentList(int page);
+public interface RecruitmentsRepositoryCustom {
+
+    List<Recruitment> getList(int page);
 }

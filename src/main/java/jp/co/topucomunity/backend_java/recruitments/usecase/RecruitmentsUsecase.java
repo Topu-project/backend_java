@@ -60,7 +60,8 @@ public class RecruitmentsUsecase {
     }
 
     public List<RecruitmentIndexPageResponse> getRecruitments() {
-        var recruitments = recruitmentsRepository.findAll();
+//        var recruitments = recruitmentsRepository.findAll();
+        var recruitments = recruitmentsRepository.getList(10);
 
         return recruitments.stream()
                 .map(RecruitmentIndexPageResponse::from).toList();
