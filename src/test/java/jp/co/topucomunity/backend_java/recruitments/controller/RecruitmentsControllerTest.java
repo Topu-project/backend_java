@@ -101,7 +101,7 @@ class RecruitmentsControllerTest {
     @Test
     void getRecruitmentById() throws Exception {
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -138,7 +138,7 @@ class RecruitmentsControllerTest {
     @Test
     void deleteRecruitmentById() throws Exception {
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -153,7 +153,7 @@ class RecruitmentsControllerTest {
     void updateRecruitment() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         var updateRecruitmentRequest = createUpdateRecruitmentRequest();
@@ -196,7 +196,15 @@ class RecruitmentsControllerTest {
     void getRecruitments() throws Exception {
         // given
         // TODO : Require cleansing
-        var recruitment1 = createRecruitment();
+        var techStack = TechStack.from("Java");
+        var position = Position.from("Backend");
+        var recruitment1 = createRecruitment(techStack, position, RecruitmentCategories.STUDY, ProgressMethods.ALL);
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment1);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment1);
+        recruitmentPosition.makeRelationship(position, recruitment1);
+        recruitmentTechStack.makeRelationship(techStack, recruitment1);
+
+
 
         var techStack2 = TechStack.from("Kotlin");
         var position2 = Position.from("BackendEngineer");
@@ -233,12 +241,10 @@ class RecruitmentsControllerTest {
 
     }
 
-    private static Recruitment createRecruitment() {
-        var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
+    private static Recruitment createRecruitment(TechStack techStack, Position position, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods) {
         var recruitment = Recruitment.builder()
-                .recruitmentCategories(RecruitmentCategories.STUDY)
-                .progressMethods(ProgressMethods.ALL)
+                .recruitmentCategories(recruitmentCategories)
+                .progressMethods(progressMethods)
                 .numberOfPeople(3)
                 .progressPeriod(3)
                 .recruitmentDeadline(LocalDate.of(2024, 10, 30))
@@ -247,10 +253,10 @@ class RecruitmentsControllerTest {
                 .content("사실은 윈도우앱")
                 .recruitmentTechStacks(new ArrayList<>())
                 .build();
-        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
-        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
-        recruitmentPosition.makeRelationship(position, recruitment);
-        recruitmentTechStack.makeRelationship(techStack, recruitment);
+//        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+//        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+//        recruitmentPosition.makeRelationship(position, recruitment);
+//        recruitmentTechStack.makeRelationship(techStack, recruitment);
         return recruitment;
     }
 

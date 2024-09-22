@@ -36,7 +36,8 @@ public class RecruitmentsController {
         recruitmentsUsecase.deleteRecruitment(recruitmentId);
     }
 
-    @GetMapping// TODO : Paging, Search, QueryDSL
+    @GetMapping("/query")// TODO : Paging, Search, QueryDSL
+//    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
     public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage() {
         return recruitmentsUsecase.getRecruitments();
     }
