@@ -93,17 +93,78 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
-                .andExpect(jsonPath("$.errorMessage").value("모든 항목을 입력해야 합니다."))
-                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("카테고리를 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.progressMethods").value("진행방법을 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.techStacks").value("기술스택을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("응모 포지션을 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.contract").value("이메일을 입력해 주세요."))
-                .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
-                .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
+                .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.progressMethods").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.techStacks").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.contract").value("필수항목 입니다."))
+                .andExpect(jsonPath("$.validationErrors.subject").value("필수항목 입니다."))
+                .andExpect(jsonPath("$.validationErrors.content").value("필수항목 입니다."))
+                .andDo(print());
+    }
+
+    @DisplayName("올바른 이메일 형식이 아닐경우 응모글 작성에 실패한다.")
+    @Test
+    void postRecruitmentFail2() throws Exception {
+
+        // given
+        var request = CreateRecruitmentRequest.builder()
+                .contract("WrongEmail@.com")
+                .build();
+
+        var jsonString = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.contract").value("올바른 이메일 형식을 입력해 주세요."))
+                .andDo(print());
+    }
+
+    @DisplayName("마감일이 현재날짜보다 이전의 날짜라면 응모글 작성에 실패한다.")
+    @Test
+    void postRecruitmentFail3() throws Exception {
+
+        // given
+        LocalDate testDate = LocalDate.of(2024, 01, 01);
+
+        var request = CreateRecruitmentRequest.builder()
+                .recruitmentDeadline(testDate)
+                .build();
+
+        var jsonString = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("현재 날짜 이전의 날짜는 입력할 수 없습니다."))
+                .andDo(print());
+    }
+
+    @DisplayName("모집인원과 진행기간이 1미만일 경우 응모글 작성에 실패한다.")
+    @Test
+    void postRecruitmentFail4() throws Exception {
+
+        // given
+        var request = CreateRecruitmentRequest.builder()
+                .numberOfPeople(0)
+                .progressPeriod(0)
+                .build();
+
+        var jsonString = objectMapper.writeValueAsString(request);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("1이상의 숫자를 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("1이상의 숫자를 입력해 주세요."))
                 .andDo(print());
     }
 
@@ -214,17 +275,100 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
-                .andExpect(jsonPath("$.errorMessage").value("모든 항목을 입력해야 합니다."))
-                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("카테고리를 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.progressMethods").value("진행방법을 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.techStacks").value("기술스택을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("응모 포지션을 선택해 주세요."))
-                .andExpect(jsonPath("validationErrors.numberOfPeople").value("모집 인원을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.progressPeriod").value("진행 기간을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("마감일을 입력해 주세요."))
-                .andExpect(jsonPath("validationErrors.contract").value("이메일을 입력해 주세요."))
-                .andExpect(jsonPath("$.validationErrors.subject").value("제목을 입력해 주세요."))
-                .andExpect(jsonPath("$.validationErrors.content").value("내용을 입력해 주세요."))
+                .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentCategories").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.progressMethods").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.techStacks").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentPositions").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("필수항목 입니다."))
+                .andExpect(jsonPath("validationErrors.contract").value("필수항목 입니다."))
+                .andExpect(jsonPath("$.validationErrors.subject").value("필수항목 입니다."))
+                .andExpect(jsonPath("$.validationErrors.content").value("필수항목 입니다."))
+                .andDo(print());
+    }
+
+    @Transactional
+    @DisplayName("올바른 이메일 형식이 아닐경우 응모글 수정에 실패한다.")
+    @Test
+    void updateFail2() throws Exception {
+
+        // given
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        var updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
+                .contract("WrongEmail@.com")
+                .build();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
+
+        savedRecruitment.update(updateRecruitment);
+
+        var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.contract").value("올바른 이메일 형식을 입력해 주세요."))
+                .andDo(print());
+    }
+
+    @Transactional
+    @DisplayName("마감일이 현재날짜보다 이전의 날짜라면 응모글 수정에 실패한다.")
+    @Test
+    void updateFail3() throws Exception {
+
+        // given
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+        LocalDate testDate = LocalDate.of(2024, 01, 01);
+
+        var updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
+                .recruitmentDeadline(testDate)
+                .build();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
+
+        savedRecruitment.update(updateRecruitment);
+
+        var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("현재 날짜 이전의 날짜는 입력할 수 없습니다."))
+                .andDo(print());
+    }
+
+    @Transactional
+    @DisplayName("모집인원과 진행기간이 1미만일 경우 응모글 작성에 실패한다.")
+    @Test
+    void updateFail4() throws Exception {
+
+        // given
+        var recruitment = createRecruitment();
+        var savedRecruitment = recruitmentsRepository.save(recruitment);
+
+
+        var updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
+                .numberOfPeople(0)
+                .progressPeriod(0)
+                .build();
+        var updateRecruitment = UpdateRecruitment.from(updateRecruitmentRequest);
+
+        savedRecruitment.update(updateRecruitment);
+
+        var jsonString = objectMapper.writeValueAsString(updateRecruitmentRequest);
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andExpect(jsonPath("validationErrors.numberOfPeople").value("1이상의 숫자를 입력해 주세요."))
+                .andExpect(jsonPath("validationErrors.progressPeriod").value("1이상의 숫자를 입력해 주세요."))
                 .andDo(print());
     }
 

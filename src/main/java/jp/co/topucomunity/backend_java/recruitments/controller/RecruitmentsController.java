@@ -22,7 +22,7 @@ public class RecruitmentsController {
     private final RecruitmentsUsecase recruitmentsUsecase;
 
     @PostMapping
-    public void createRecruitment(@RequestBody @Valid CreateRecruitmentRequest request) { // TODO : バリデーション
+    public void createRecruitment(@RequestBody @Valid CreateRecruitmentRequest request) {
         recruitmentsUsecase.post(PostRecruitment.from(request));
     }
 

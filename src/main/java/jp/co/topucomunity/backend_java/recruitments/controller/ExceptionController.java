@@ -3,6 +3,7 @@ package jp.co.topucomunity.backend_java.recruitments.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentErrorResponse;
 import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentException;
+import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,8 @@ public class ExceptionController {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(RecruitmentException.class)
-    public ResponseEntity<RecruitmentErrorResponse> recruitmentExceptionHandler(RecruitmentException e, HttpServletRequest request) {
+    @ExceptionHandler(RecruitmentNotFoundException.class)
+    public ResponseEntity<RecruitmentErrorResponse> recruitmentNotFoundHandler(RecruitmentException e, HttpServletRequest request) {
 
         String errorMessage = messageSource.getMessage(e.getMessage(), null, request.getLocale());
 
@@ -34,7 +35,7 @@ public class ExceptionController {
     @ResponseBody
     public RecruitmentErrorResponse invalidRequestHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
 
-        String errorMessage = messageSource.getMessage("recruitment.validation.needAllFields", null, request.getLocale());
+        String errorMessage = messageSource.getMessage("recruitment.invalidRequest", null, request.getLocale());
         RecruitmentErrorResponse errorResponse = RecruitmentErrorResponse.from(errorMessage);
 
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
