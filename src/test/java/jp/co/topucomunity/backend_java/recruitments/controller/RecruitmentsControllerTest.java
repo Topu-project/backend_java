@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -223,20 +224,91 @@ class RecruitmentsControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(savedRecruitments.get(0).getId().intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(savedRecruitments.get(1).getId().intValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].recruitmentCategory", is(RecruitmentCategories.STUDY.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Java")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].positions[0]", is("Backend")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].recruitmentDeadline", is("2024-10-30")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].subject", is("끝내주는 서비스를 개발 해 봅시다.")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Kotlin")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].positions[0]", is("BackendEngineer")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].recruitmentDeadline", is("2024-08-13")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].subject", is("끝내주는 Kotlin 서비스를 개발 해 봅시다.")))
                 .andDo(print());
 
     }
 
+    @DisplayName("선택된 기술스택과 관련한 응모글의 목록을 확인할 수 있다.")
+    @Test
+    void getSearchResultsTechStacks() throws Exception {
+        // given
+        var recruitments = IntStream.range(0, 50)
+                .mapToObj(i ->
+                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
+                .toList();
+        recruitmentsRepository.saveAll(recruitments);
+
+        var searchString = "techStacks=Java8,Java17,Java21";
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].techStacks[0]", is("Java8")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].techStacks[0]", is("Java17")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Java21")))
+                .andDo(print());
+    }
+
+    @DisplayName("선택된 응모 포지션과 관련한 응모글의 목록을 확인할 수 있다.")
+    @Test
+    void getSearchResultsPositions() throws Exception {
+        // given
+        var recruitments = IntStream.range(0, 50)
+                .mapToObj(i ->
+                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
+                .toList();
+        recruitmentsRepository.saveAll(recruitments);
+
+        var searchString = "positions=position8,position17,position21";
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].positions[0]", is("position8")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].positions[0]", is("position17")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].positions[0]", is("position21")))
+                .andDo(print());
+    }
+
+    @DisplayName("선택된 응모 포지션과 관련한 응모글의 목록을 확인할 수 있다.")
+    @Test
+    void getSearchResultsPositionsOrTechStacks() throws Exception {
+        // given
+        var recruitments = IntStream.range(0, 50)
+                .mapToObj(i ->
+                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
+                .toList();
+        recruitmentsRepository.saveAll(recruitments);
+
+        var searchString = "positions=position1,position3,position7&techStacks=Java8,Java17,Java21";
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(6)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Java21")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].techStacks[0]", is("Java17")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].techStacks[0]", is("Java8")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[3].positions[0]", is("position7")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[4].positions[0]", is("position3")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[5].positions[0]", is("position1")))
+                .andDo(print());
+    }
+
+    // TODO : page, size 확인 테스트 작성
+
     private static Recruitment createRecruitment(TechStack techStack, Position position, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods) {
         var recruitment = Recruitment.builder()
-                .recruitmentCategories(recruitmentCategories)
-                .progressMethods(progressMethods)
+                .recruitmentCategories(recruitmentCategories == null ? RecruitmentCategories.STUDY : recruitmentCategories)
+                .progressMethods(progressMethods == null ? ProgressMethods.ALL : progressMethods)
                 .numberOfPeople(3)
                 .progressPeriod(3)
                 .recruitmentDeadline(LocalDate.of(2024, 10, 30))

@@ -40,6 +40,7 @@ public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom 
                         eqSubject(subject))
                 .offset((long) (searchParams.getPage() - 1) * searchParams.getSize())
                 .limit(searchParams.getSize())
+                .orderBy(recruitment.createdAt.desc())
                 .fetch();
     }
 
