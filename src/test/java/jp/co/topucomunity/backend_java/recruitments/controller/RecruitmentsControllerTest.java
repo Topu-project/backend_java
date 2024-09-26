@@ -93,6 +93,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
                 .andExpect(jsonPath("validationErrors.recruitmentCategories").value("필수항목 입니다."))
                 .andExpect(jsonPath("validationErrors.progressMethods").value("필수항목 입니다."))
@@ -122,6 +123,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.contract").value("올바른 이메일 형식을 입력해 주세요."))
                 .andDo(print());
     }
@@ -143,6 +145,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("현재 날짜 이전의 날짜는 입력할 수 없습니다."))
                 .andDo(print());
     }
@@ -163,6 +166,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.numberOfPeople").value("1이상의 숫자를 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.progressPeriod").value("1이상의 숫자를 입력해 주세요."))
                 .andDo(print());
@@ -275,6 +279,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
                 .andExpect(jsonPath("validationErrors.recruitmentCategories").value("필수항목 입니다."))
                 .andExpect(jsonPath("validationErrors.progressMethods").value("필수항목 입니다."))
@@ -311,6 +316,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.contract").value("올바른 이메일 형식을 입력해 주세요."))
                 .andDo(print());
     }
@@ -339,6 +345,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.recruitmentDeadline").value("현재 날짜 이전의 날짜는 입력할 수 없습니다."))
                 .andDo(print());
     }
@@ -367,6 +374,7 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/recruitments/{recruitmentId}", savedRecruitment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("validationErrors.numberOfPeople").value("1이상의 숫자를 입력해 주세요."))
                 .andExpect(jsonPath("validationErrors.progressPeriod").value("1이상의 숫자를 입력해 주세요."))
                 .andDo(print());
