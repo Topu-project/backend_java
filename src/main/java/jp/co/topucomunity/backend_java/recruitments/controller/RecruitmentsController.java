@@ -39,7 +39,7 @@ public class RecruitmentsController {
 
     @GetMapping("/query")// TODO : Paging, Search, QueryDSL
     public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
-        return recruitmentsUsecase.getRecruitments();
+        return recruitmentsUsecase.getRecruitments(recruitmentSearch);
     }
 
     @PutMapping("/{recruitmentId}")
