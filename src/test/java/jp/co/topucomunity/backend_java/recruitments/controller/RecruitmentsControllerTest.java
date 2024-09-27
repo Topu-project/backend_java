@@ -266,7 +266,7 @@ class RecruitmentsControllerTest {
     void updateFail() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), null, null);
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         var updateRecruitmentRequest = UpdateRecruitmentRequest.builder().build();
@@ -301,7 +301,7 @@ class RecruitmentsControllerTest {
     void updateFail2() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), null, null);
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         var updateRecruitmentRequest = UpdateRecruitmentRequest.builder()
@@ -328,7 +328,7 @@ class RecruitmentsControllerTest {
     void updateFail3() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), null, null);
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         LocalDate testDate = LocalDate.of(2024, 01, 01);
@@ -357,7 +357,7 @@ class RecruitmentsControllerTest {
     void updateFail4() throws Exception {
 
         // given
-        var recruitment = createRecruitment();
+        var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), null, null);
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
 
