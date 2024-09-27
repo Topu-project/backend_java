@@ -29,8 +29,8 @@ public class Recruitment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProgressMethods progressMethods;
 
-    private int numberOfPeople;
-    private int progressPeriod;
+    private Integer numberOfPeople;
+    private Integer progressPeriod;
     private LocalDate recruitmentDeadline;
     private String contract;
     private String subject;
