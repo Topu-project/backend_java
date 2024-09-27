@@ -214,6 +214,64 @@ public class RecruitmentApiDocsTest {
                         )));
     }
 
+    @DisplayName("메인페이지에서 기술스택, 포지션, 진행방식, 카테고리, 제목을 지정해서 검색할 수 있고 그 목록을 확인할 수 있다.")
+    @Test
+    void searchResult() throws Exception {
+        // given
+        var recruitment1 = createRecruitment(TechStack.from("Java"), Position.from("バックエンド"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
+        var recruitment2 = createRecruitment(TechStack.from("React"), Position.from("フロントエンド"), RecruitmentCategories.PROJECT, ProgressMethods.ONLINE);
+        var recruitment3 = createRecruitment(TechStack.from("Vue"), Position.from("Frontend"), RecruitmentCategories.PROJECT, ProgressMethods.ONLINE);
+        var recruitment4 = createRecruitment(TechStack.from("Docker"), Position.from("インフラ"), RecruitmentCategories.STUDY, ProgressMethods.ONLINE);
+        var recruitment5 = createRecruitment(TechStack.from("AWS"), Position.from("DevOps"), RecruitmentCategories.PROJECT, ProgressMethods.OFFLINE);
+        recruitmentsRepository.saveAll(List.of(recruitment1, recruitment2, recruitment3, recruitment4, recruitment5));
+
+        var searchQueries = "page=1&size=10&positions=バックエンド,フロントエンド&progressMethods=ONLINE&techStacks=React&search=끝내주는";
+        // expected
+        mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/query?" + searchQueries))
+                .andExpect(status().isOk())
+                .andDo(document("get-recruitments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        RequestDocumentation.queryParameters(
+                                RequestDocumentation.parameterWithName("page").description("페이지 번호"),
+                                RequestDocumentation.parameterWithName("size").description("페이지당 표시 갯수"),
+                                RequestDocumentation.parameterWithName("positions").description("응모 포지션"),
+                                RequestDocumentation.parameterWithName("techStacks").description("기술스택"),
+                                RequestDocumentation.parameterWithName("progressMethods").description("진행방식"),
+                                RequestDocumentation.parameterWithName("search").description("제목")
+                        ),
+                        PayloadDocumentation.responseFields(
+                                fieldWithPath("[].id").description("응모글 ID"),
+                                fieldWithPath("[].recruitmentCategory").description("응모 카테고리"),
+                                fieldWithPath("[].progressMethods").description("진행 방법"),
+                                fieldWithPath("[].recruitmentDeadline").description("마감일"),
+                                fieldWithPath("[].subject").description("제목"),
+                                fieldWithPath("[].techStacks").description("기술스택"),
+                                fieldWithPath("[].positions").description("응모 포지션")
+                        )))
+                .andDo(print());
+
+    }
+
+    private static Recruitment createRecruitment(TechStack techStack, Position position, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods) {
+        var recruitment = Recruitment.builder()
+                .recruitmentCategories(recruitmentCategories == null ? RecruitmentCategories.STUDY : recruitmentCategories)
+                .progressMethods(progressMethods == null ? ProgressMethods.ALL : progressMethods)
+                .numberOfPeople(3)
+                .progressPeriod(3)
+                .recruitmentDeadline(LocalDate.of(2024, 10, 30))
+                .contract("test@tesc.om")
+                .subject("끝내주는 서비스를 개발 해 봅시다.")
+                .content("사실은 윈도우앱")
+                .recruitmentTechStacks(new ArrayList<>())
+                .build();
+        var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
+        var recruitmentTechStack = RecruitmentTechStack.of(techStack, recruitment);
+        recruitmentPosition.makeRelationship(position, recruitment);
+        recruitmentTechStack.makeRelationship(techStack, recruitment);
+        return recruitment;
+    }
+
     private static CreateRecruitmentRequest createDefaultRecruitmentRequest() {
         return CreateRecruitmentRequest.builder()
                 .recruitmentCategories(RecruitmentCategories.STUDY)

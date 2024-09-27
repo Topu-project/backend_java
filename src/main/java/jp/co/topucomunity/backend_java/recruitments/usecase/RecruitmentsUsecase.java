@@ -1,5 +1,6 @@
 package jp.co.topucomunity.backend_java.recruitments.usecase;
 
+import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -60,8 +61,8 @@ public class RecruitmentsUsecase {
         recruitmentsRepository.deleteById(recruitmentId);
     }
 
-    public List<RecruitmentIndexPageResponse> getRecruitments() {
-        var recruitments = recruitmentsRepository.findAll();
+    public List<RecruitmentIndexPageResponse> getRecruitments(RecruitmentSearch recruitmentSearch) {
+        var recruitments = recruitmentsRepository.getSearchResult(recruitmentSearch);
 
         return recruitments.stream()
                 .map(RecruitmentIndexPageResponse::from).toList();

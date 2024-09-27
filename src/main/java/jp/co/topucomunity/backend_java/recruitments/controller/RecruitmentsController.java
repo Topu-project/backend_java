@@ -2,6 +2,7 @@ package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import jakarta.validation.Valid;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
+import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
@@ -37,9 +38,9 @@ public class RecruitmentsController {
         recruitmentsUsecase.deleteRecruitment(recruitmentId);
     }
 
-    @GetMapping// TODO : Paging, Search, QueryDSL
-    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage() {
-        return recruitmentsUsecase.getRecruitments();
+    @GetMapping("/query")
+    public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
+        return recruitmentsUsecase.getRecruitments(recruitmentSearch);
     }
 
     @PutMapping("/{recruitmentId}")
@@ -47,5 +48,4 @@ public class RecruitmentsController {
         recruitmentsUsecase.update(recruitmentId, UpdateRecruitment.from(request));
     }
 
-    // TODO : getTechStacks
 }

@@ -43,7 +43,7 @@ public class Recruitment extends BaseEntity {
     private List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
+    private final List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
 
     @Builder
     private Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks) {

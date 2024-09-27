@@ -3,6 +3,7 @@ package jp.co.topucomunity.backend_java.recruitments.controller.out;
 import jp.co.topucomunity.backend_java.recruitments.domain.Recruitment;
 import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentPosition;
 import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentTechStack;
+import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,19 +19,21 @@ public class RecruitmentIndexPageResponse {
     private final List<String> positions;
     private final LocalDate recruitmentDeadline;
     private final String subject;
+    private final ProgressMethods progressMethods;
     // TODO: ユーザ情報
     // TODO: View数
     // TODO: 参加人数
     // TODO: isNew いるのか?
 
     @Builder
-    private RecruitmentIndexPageResponse(Long id, RecruitmentCategories recruitmentCategory, List<String> techStacks, List<String> positions, LocalDate recruitmentDeadline, String subject) {
+    private RecruitmentIndexPageResponse(Long id, RecruitmentCategories recruitmentCategory, List<String> techStacks, List<String> positions, LocalDate recruitmentDeadline, String subject, ProgressMethods progressMethods) {
         this.id = id;
         this.recruitmentCategory = recruitmentCategory;
         this.techStacks = techStacks;
         this.positions = positions;
         this.recruitmentDeadline = recruitmentDeadline;
         this.subject = subject;
+        this.progressMethods = progressMethods;
     }
 
     public static RecruitmentIndexPageResponse from(Recruitment recruitment) {
@@ -42,6 +45,7 @@ public class RecruitmentIndexPageResponse {
                 .positions(recruitment.getRecruitmentPositions().stream()
                         .map(RecruitmentPosition::getPositionName).toList())
                 .recruitmentDeadline(recruitment.getRecruitmentDeadline())
+                .progressMethods(recruitment.getProgressMethods())
                 .subject(recruitment.getSubject())
                 .build();
     }
