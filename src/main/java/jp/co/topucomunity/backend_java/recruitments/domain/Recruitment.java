@@ -29,8 +29,8 @@ public class Recruitment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProgressMethods progressMethods;
 
-    private int numberOfPeople;
-    private int progressPeriod;
+    private Integer numberOfPeople;
+    private Integer progressPeriod;
     private LocalDate recruitmentDeadline;
     private String contract;
     private String subject;
@@ -43,7 +43,7 @@ public class Recruitment extends BaseEntity {
     private List<RecruitmentTechStack> recruitmentTechStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
+    private final List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
 
     @Builder
     private Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks) {

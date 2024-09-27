@@ -1,4 +1,4 @@
-package jp.co.topucomunity.backend_java.recruitments.domain;
+package jp.co.topucomunity.backend_java.recruitments.exception;
 
 public abstract class RecruitmentException extends RuntimeException {
 

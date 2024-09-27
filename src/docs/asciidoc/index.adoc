@@ -30,7 +30,12 @@ include::get-recruitment.adoc[]
 
 include::update-recruitment.adoc[]
 
+=== Get tech stacks
+
+include::get-tech-stacks.adoc[]
+
 === Get Positions
+
 include::get-positions.adoc[]
 
 ---
@@ -50,6 +55,7 @@ include::get-user-fail.adoc[]
 ---
 
 === Create user - first login
+
 include::create-user.adoc[]
 
 ---
