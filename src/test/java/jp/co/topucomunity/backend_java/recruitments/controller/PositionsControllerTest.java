@@ -44,9 +44,9 @@ class PositionsControllerTest {
         // expected
         mockMvc.perform(MockMvcRequestBuilders.get("/positions"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Matchers.is("Backend")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1]", Matchers.is("Infra")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.positions.size()", Matchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.positions.[0]", Matchers.is("Backend")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.positions.[1]", Matchers.is("Infra")))
                 .andDo(print());
 
     }
