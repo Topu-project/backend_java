@@ -1,5 +1,6 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
+import jakarta.validation.Valid;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
@@ -22,7 +23,7 @@ public class RecruitmentsController {
     private final RecruitmentsUsecase recruitmentsUsecase;
 
     @PostMapping
-    public void createRecruitment(@RequestBody CreateRecruitmentRequest request) { // TODO : バリデーション
+    public void createRecruitment(@RequestBody @Valid CreateRecruitmentRequest request) {
         recruitmentsUsecase.post(PostRecruitment.from(request));
     }
 
@@ -43,7 +44,7 @@ public class RecruitmentsController {
     }
 
     @PutMapping("/{recruitmentId}")
-    public void updateByRecruitmentId(@PathVariable Long recruitmentId, @RequestBody UpdateRecruitmentRequest request) {
+    public void updateByRecruitmentId(@PathVariable Long recruitmentId, @RequestBody @Valid UpdateRecruitmentRequest request) {
         recruitmentsUsecase.update(recruitmentId, UpdateRecruitment.from(request));
     }
 

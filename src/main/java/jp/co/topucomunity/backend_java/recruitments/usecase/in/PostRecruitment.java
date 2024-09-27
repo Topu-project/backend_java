@@ -17,8 +17,8 @@ public class PostRecruitment {
     private ProgressMethods progressMethods;
     private List<String> techStacks;
     private List<String> recruitmentPositions;
-    private int numberOfPeople;
-    private int progressPeriod;
+    private Integer numberOfPeople;
+    private Integer progressPeriod;
     private LocalDate recruitmentDeadline;
     private String contract;
     private String subject;

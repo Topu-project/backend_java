@@ -4,6 +4,7 @@ import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSea
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
+import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentNotFoundException;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepository;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
