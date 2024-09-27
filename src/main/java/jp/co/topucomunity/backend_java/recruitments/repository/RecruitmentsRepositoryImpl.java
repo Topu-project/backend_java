@@ -77,7 +77,7 @@ public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom 
         if (title == null || title.isEmpty()) {
             return null;
         }
-        return recruitment.subject.contains(title);
+        return recruitment.subject.containsIgnoreCase(title);
     }
 
 }

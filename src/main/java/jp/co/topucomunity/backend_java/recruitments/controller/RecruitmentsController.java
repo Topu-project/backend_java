@@ -37,7 +37,7 @@ public class RecruitmentsController {
         recruitmentsUsecase.deleteRecruitment(recruitmentId);
     }
 
-    @GetMapping("/query")// TODO : Paging, Search, QueryDSL
+    @GetMapping("/query")
     public List<RecruitmentIndexPageResponse> getRecruitmentsForIndexPage(@ModelAttribute RecruitmentSearch recruitmentSearch) {
         return recruitmentsUsecase.getRecruitments(recruitmentSearch);
     }
@@ -47,5 +47,4 @@ public class RecruitmentsController {
         recruitmentsUsecase.update(recruitmentId, UpdateRecruitment.from(request));
     }
 
-    // TODO : getTechStacks
 }
