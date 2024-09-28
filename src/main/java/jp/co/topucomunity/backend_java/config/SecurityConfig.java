@@ -45,7 +45,12 @@ public class SecurityConfig implements WebMvcConfigurer {
                 userInfoEndpoint.userService(googleOAuth2UserUsecase);
             }).successHandler(oauth2LoginSuccessController);
         });
-        http.logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.logoutSuccessUrl("/"));
+        http.logout(httpSecurityLogoutConfigurer ->
+                httpSecurityLogoutConfigurer
+                        .logoutUrl("/auth/logout")
+                        .deleteCookies("SESSION")
+                        .clearAuthentication(true)
+                        .logoutSuccessUrl("http://localhost:3000"));
         return http.build();
     }
 
