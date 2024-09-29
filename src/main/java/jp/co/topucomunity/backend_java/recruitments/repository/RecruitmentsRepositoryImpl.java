@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.domain.Recruitment;
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
+import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom 
 
     @Override
     public List<Recruitment> getSearchResult(RecruitmentSearch searchParams) {
+        var categories = searchParams.getCategories();
         var positionNames = searchParams.getPositions();
         var techStackNames = searchParams.getTechStacks();
         var progressMethods = searchParams.getProgressMethods();
@@ -36,12 +38,20 @@ public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom 
                 .join(position).on(recruitmentPosition.position.id.eq(position.id))
                 .fetchJoin()
                 .where(or(eqPositions(positionNames), eqTechStacks(techStackNames)),
+                        eqCategories(categories),
                         eqProgressMethods(progressMethods),
                         eqSubject(subject))
                 .offset((long) (searchParams.getPage() - 1) * searchParams.getSize())
                 .limit(searchParams.getSize())
                 .orderBy(recruitment.createdAt.desc())
                 .fetch();
+    }
+
+    private BooleanExpression eqCategories(RecruitmentCategories recruitmentCategories) {
+        if (recruitmentCategories == null) {
+            return null;
+        }
+        return recruitment.recruitmentCategories.eq(recruitmentCategories);
     }
 
     private BooleanBuilder eqPositions(List<String> positionNames) {
