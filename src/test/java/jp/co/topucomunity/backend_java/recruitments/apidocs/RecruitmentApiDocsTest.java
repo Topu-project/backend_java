@@ -192,8 +192,7 @@ public class RecruitmentApiDocsTest {
         // expected
         mvc.perform(RestDocumentationRequestBuilders.put("/recruitments/{recruitmentId}", recruitment.getId())
                         .content(jsonString)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("UTF-8"))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("update-recruitment",
                         preprocessRequest(prettyPrint()),
