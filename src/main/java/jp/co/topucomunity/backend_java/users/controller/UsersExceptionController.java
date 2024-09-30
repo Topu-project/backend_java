@@ -19,6 +19,8 @@ import java.net.URI;
 @RestControllerAdvice
 public class UsersExceptionController {
 
+    private static final String REDIRECT_URL = String.valueOf(URI.create("http://localhost:3000/login/retry"));
+
     @ExceptionHandler(UserException.class)
     public ResponseEntity<UserErrorResponse> usersExceptionHandler(UserException e) {
         log.error("[UserException] : {}", e.getMessage());
@@ -36,7 +38,7 @@ public class UsersExceptionController {
 
     private static void redirectPermanently(HttpServletResponse response, ResponseCookie expiredCookie) {
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
-        response.setHeader(HttpHeaders.LOCATION, String.valueOf(URI.create("http://localhost:3000/login"))); // Todo : redirect url 분리
+        response.setHeader(HttpHeaders.LOCATION, REDIRECT_URL);
         response.setStatus(HttpStatus.MOVED_PERMANENTLY.value());
     }
 
