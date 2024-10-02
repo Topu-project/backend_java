@@ -18,7 +18,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 
@@ -56,8 +55,7 @@ public class JwtResolver implements HandlerMethodArgumentResolver {
         }
 
         // validateJasonWebToken
-        var encodedKey = Base64.getEncoder().encode(jwtSignKey.getBytes());
-        var secretKey = Keys.hmacShaKeyFor(encodedKey);
+        var secretKey = Keys.hmacShaKeyFor(jwtSignKey.getBytes());
 
         try {
             var claimsJws =
