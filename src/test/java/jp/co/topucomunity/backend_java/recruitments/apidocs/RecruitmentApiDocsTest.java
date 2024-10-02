@@ -225,7 +225,7 @@ public class RecruitmentApiDocsTest {
         var recruitment5 = createRecruitment(TechStack.from("AWS"), Position.from("DevOps"), RecruitmentCategories.PROJECT, ProgressMethods.OFFLINE);
         recruitmentsRepository.saveAll(List.of(recruitment1, recruitment2, recruitment3, recruitment4, recruitment5));
 
-        var searchQueries = "page=1&size=10&categories=STUDY&positions=バックエンド,フロントエンド&progressMethods=ONLINE&techStacks=React&search=끝내주는";
+        var searchQueries = "page=1&size=10&categories=STUDY&positions=バックエンド,フロントエンド&progressMethods=ALL&techStacks=React&search=끝내주는";
         // expected
         mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/query?" + searchQueries))
                 .andExpect(status().isOk())

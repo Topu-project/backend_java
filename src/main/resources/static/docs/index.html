@@ -778,7 +778,7 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_http_request_3"><a class="link" href="#_http_request_3">http request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /recruitments/query?page=1&amp;size=10&amp;categories=STUDY&amp;positions=%E3%83%90%E3%83%83%E3%82%AF%E3%82%A8%E3%83%B3%E3%83%89,%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89&amp;progressMethods=ONLINE&amp;techStacks=React&amp;search=%EB%81%9D%EB%82%B4%EC%A3%BC%EB%8A%94 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /recruitments/query?page=1&amp;size=10&amp;categories=STUDY&amp;positions=%E3%83%90%E3%83%83%E3%82%AF%E3%82%A8%E3%83%B3%E3%83%89,%E3%83%95%E3%83%AD%E3%83%B3%E3%83%88%E3%82%A8%E3%83%B3%E3%83%89&amp;progressMethods=ALL&amp;techStacks=React&amp;search=%EB%81%9D%EB%82%B4%EC%A3%BC%EB%8A%94 HTTP/1.1
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -798,16 +798,16 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 267
+Content-Length: 258
 
 [ {
-  "id" : 5,
-  "recruitmentCategory" : "PROJECT",
-  "techStacks" : [ "React" ],
-  "positions" : [ "フロントエンド" ],
+  "id" : 4,
+  "recruitmentCategory" : "STUDY",
+  "techStacks" : [ "Java" ],
+  "positions" : [ "バックエンド" ],
   "recruitmentDeadline" : "2024-10-30",
   "subject" : "끝내주는 서비스를 개발 해 봅시다.",
-  "progressMethods" : "ONLINE"
+  "progressMethods" : "ALL"
 } ]</code></pre>
 </div>
 </div>
@@ -1521,7 +1521,7 @@ Content-Length: 102
 Content-Type: application/json;charset=UTF-8
 Content-Length: 138
 Host: localhost:8080
-Cookie: SESSION=eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwic3ViIjoiYWQ3MDAwNzEtMDBjYi00YTFlLWE3MjMtODQ0OTg3NmE3NTcxIiwiZXhwIjoxNzI3NjExMTAwLCJpYXQiOjE3Mjc2MDkzMDB9.prMUlyBqXbOkmLgoD_d7M0JDybVGptfYyak06YT7xehLB4AsIXuVOu_r3hBrDXWS
+Cookie: SESSION=eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwic3ViIjoiMDcxYjRiN2QtNGFiZi00MjMwLWI2NGYtMjg0YmYxYzJkZWFmIiwiZXhwIjoxNzI3ODg0OTA0LCJpYXQiOjE3Mjc4ODMxMDR9.RpFvz6T64E29UmoefCKq2Y7HxmZZQrnQzbsrcFBPNIp-lYmPphEZ4nmLrUNU6f7U
 
 {
   "nickname" : "Bomb",
@@ -1608,7 +1608,7 @@ X-Frame-Options: DENY</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-09-29 19:35:52 +0900
+Last updated 2024-10-02 23:24:13 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
