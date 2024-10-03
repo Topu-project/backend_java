@@ -2,6 +2,7 @@ package jp.co.topucomunity.backend_java.users.domain;
 
 import jakarta.persistence.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.Position;
+import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentUser;
 import jp.co.topucomunity.backend_java.recruitments.domain.TechStack;
 import jp.co.topucomunity.backend_java.users.usecase.in.RegisterUser;
 import lombok.AccessLevel;
@@ -50,6 +51,9 @@ public class User {
     private List<TechStack> techStacks = new ArrayList<>();
 
     private String links;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<RecruitmentUser> recruitmentUsers = new ArrayList<>();
 
     @Builder
     public User(String sub, String email, String nickname, Position position, String affiliation, boolean isPublicAffiliation, boolean isFirstLogin, Integer personalHistoryYear, String selfIntroduction, List<TechStack> techStacks, String links) {

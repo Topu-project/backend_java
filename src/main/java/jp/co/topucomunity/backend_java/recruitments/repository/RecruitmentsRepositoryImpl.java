@@ -15,7 +15,9 @@ import static jp.co.topucomunity.backend_java.recruitments.domain.QPosition.posi
 import static jp.co.topucomunity.backend_java.recruitments.domain.QRecruitment.recruitment;
 import static jp.co.topucomunity.backend_java.recruitments.domain.QRecruitmentPosition.recruitmentPosition;
 import static jp.co.topucomunity.backend_java.recruitments.domain.QRecruitmentTechStack.recruitmentTechStack;
+import static jp.co.topucomunity.backend_java.recruitments.domain.QRecruitmentUser.recruitmentUser;
 import static jp.co.topucomunity.backend_java.recruitments.domain.QTechStack.techStack;
+import static jp.co.topucomunity.backend_java.users.domain.QUser.user;
 
 @RequiredArgsConstructor
 public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom {
@@ -30,6 +32,8 @@ public class RecruitmentsRepositoryImpl implements RecruitmentsRepositoryCustom 
         var subject = searchParams.getSearch();
 
         return queryFactory.selectFrom(recruitment)
+                .join(recruitmentUser).on(recruitmentUser.recruitment.id.eq(recruitment.id))
+                .join(user).on(recruitmentUser.user.userId.eq(user.userId))
                 .join(recruitmentTechStack).on(recruitmentTechStack.recruitment.id.eq(recruitment.id))
                 .join(techStack).on(recruitmentTechStack.techStack.id.eq(techStack.id))
                 .join(recruitmentPosition).on(recruitmentPosition.recruitment.id.eq(recruitment.id))

@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class PostRecruitment {
 
+    private Long userId;
     private RecruitmentCategories recruitmentCategories;
     private ProgressMethods progressMethods;
     private List<String> techStacks;
@@ -24,8 +25,9 @@ public class PostRecruitment {
     private String subject;
     private String content;
 
-    public static PostRecruitment from(CreateRecruitmentRequest request) {
+    public static PostRecruitment of(CreateRecruitmentRequest request, String userId) {
         return PostRecruitment.builder()
+                .userId(Long.valueOf(userId))
                 .recruitmentCategories(request.getRecruitmentCategories())
                 .progressMethods(request.getProgressMethods())
                 .techStacks(request.getTechStacks())

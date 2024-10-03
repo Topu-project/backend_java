@@ -181,7 +181,7 @@ public class RecruitmentApiDocsTest {
 
         // given
         var createRecruitmentRequest = createDefaultRecruitmentRequest();
-        var postRecruitment = PostRecruitment.from(createRecruitmentRequest);
+        var postRecruitment = PostRecruitment.of(createRecruitmentRequest, session.id());
         var recruitment = Recruitment.from(postRecruitment);
         recruitmentsRepository.save(recruitment);
 

@@ -3,6 +3,7 @@ package jp.co.topucomunity.backend_java.recruitments.usecase;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.RecruitmentSearch;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentIndexPageResponse;
 import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentResponse;
+import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentSearchResult;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
 import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentNotFoundException;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
@@ -10,11 +11,11 @@ import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepos
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
+import jp.co.topucomunity.backend_java.users.exception.UserNotFoundException;
+import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,19 @@ public class RecruitmentsUsecase {
     private final RecruitmentsRepository recruitmentsRepository;
     private final TechStacksRepository techStacksRepository;
     private final PositionsRepository positionsRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void post(PostRecruitment postRecruitment) {
 
         var recruitment = Recruitment.from(postRecruitment);
+
+        var foundUser = userRepository.findById(postRecruitment.getUserId())
+                .orElseThrow(UserNotFoundException::new);
+
+
+        // relationship
+        recruitment.makeRelationshipWithRecruitmentUser(foundUser);
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         postRecruitment.getTechStacks().stream()
@@ -48,9 +57,12 @@ public class RecruitmentsUsecase {
         recruitmentsRepository.save(recruitment);
     }
 
+    @Transactional
     public RecruitmentResponse getRecruitment(Long recruitmentId) {
         var foundRecruitment = recruitmentsRepository.findById(recruitmentId)
                 .orElseThrow(RecruitmentNotFoundException::new);
+        foundRecruitment.plusViews();
+
         return RecruitmentResponse.from(foundRecruitment);
     }
 
@@ -61,11 +73,12 @@ public class RecruitmentsUsecase {
         recruitmentsRepository.deleteById(recruitmentId);
     }
 
-    public List<RecruitmentIndexPageResponse> getRecruitments(RecruitmentSearch recruitmentSearch) {
+    public RecruitmentSearchResult getRecruitments(RecruitmentSearch recruitmentSearch) {
         var recruitments = recruitmentsRepository.getSearchResult(recruitmentSearch);
 
-        return recruitments.stream()
+        var data = recruitments.stream()
                 .map(RecruitmentIndexPageResponse::from).toList();
+        return RecruitmentSearchResult.from(Long.valueOf(data.size()), data);
     }
 
     @Transactional
