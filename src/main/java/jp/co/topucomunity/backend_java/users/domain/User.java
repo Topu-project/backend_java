@@ -28,6 +28,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(unique = true)
     private String nickname;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

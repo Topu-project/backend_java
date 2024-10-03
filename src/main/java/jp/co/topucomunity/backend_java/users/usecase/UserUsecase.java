@@ -1,6 +1,7 @@
 package jp.co.topucomunity.backend_java.users.usecase;
 
 import jp.co.topucomunity.backend_java.users.controller.out.UserResponse;
+import jp.co.topucomunity.backend_java.users.exception.AlreadyExistNicknameException;
 import jp.co.topucomunity.backend_java.users.exception.AlreadyExistUserException;
 import jp.co.topucomunity.backend_java.users.exception.UserNotFoundException;
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
@@ -28,6 +29,10 @@ public class UserUsecase {
         if (!foundUser.isFirstLogin()) {
             throw new AlreadyExistUserException();
         }
+
+        userRepository.findByNickname(registerUser.getNickname()).ifPresent(user -> {
+            throw new AlreadyExistNicknameException(user.getNickname());
+        });
 
         foundUser.registerFirstLoginUserInfo(registerUser);
     }
