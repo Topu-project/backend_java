@@ -1,6 +1,7 @@
 package jp.co.topucomunity.backend_java.recruitments.controller.in;
 
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods;
+import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class RecruitmentSearch {
     @Builder.Default
     private Integer size = 20;
 
+    private RecruitmentCategories categories;
     private List<String> techStacks;
     private List<String> positions;
     private ProgressMethods progressMethods;
