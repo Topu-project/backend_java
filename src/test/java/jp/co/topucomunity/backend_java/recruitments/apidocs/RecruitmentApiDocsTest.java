@@ -289,7 +289,7 @@ public class RecruitmentApiDocsTest {
 
         recruitmentsRepository.saveAll(List.of(recruitment1, recruitment2, recruitment3, recruitment4, recruitment5));
 
-        var searchQueries = "page=1&size=10&positions=バックエンド,フロントエンド&progressMethods=ONLINE&techStacks=React&search=끝내주는";
+        var searchQueries = "page=1&size=10&categories=STUDY&positions=バックエンド,フロントエンド&progressMethods=ALL&techStacks=React&search=끝내주는";
         // expected
         mvc.perform(RestDocumentationRequestBuilders.get("/recruitments/query?" + searchQueries))
                 .andExpect(status().isOk())
@@ -299,6 +299,7 @@ public class RecruitmentApiDocsTest {
                         RequestDocumentation.queryParameters(
                                 RequestDocumentation.parameterWithName("page").description("페이지 번호"),
                                 RequestDocumentation.parameterWithName("size").description("페이지당 표시 갯수"),
+                                RequestDocumentation.parameterWithName("categories").description("응모 카테고리"),
                                 RequestDocumentation.parameterWithName("positions").description("응모 포지션"),
                                 RequestDocumentation.parameterWithName("techStacks").description("기술스택"),
                                 RequestDocumentation.parameterWithName("progressMethods").description("진행방식"),
