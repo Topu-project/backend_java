@@ -3,8 +3,10 @@ package jp.co.topucomunity.backend_java.users.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
 import jp.co.topucomunity.backend_java.recruitments.config.TopuMockUser;
+import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
 import jp.co.topucomunity.backend_java.users.controller.in.SignUpRequest;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,6 +31,12 @@ class AuthControllerTest {
 
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
+    private final PositionsRepository positionsRepository;
+
+    @BeforeEach
+    void setUp() {
+        positionsRepository.deleteAll();
+    }
 
     @TopuMockUser
     @DisplayName("첫 로그인 유저의 경우 회원등록을 진행한다")

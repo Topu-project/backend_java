@@ -23,7 +23,7 @@ public class RecruitmentsController {
 
     @PostMapping
     public void createRecruitment(@RequestBody @Validated CreateRecruitmentRequest request, @Validated UserSession session) {
-        recruitmentsUsecase.post(PostRecruitment.of(request, session.id()));
+        recruitmentsUsecase.post(PostRecruitment.of(request, Long.valueOf(session.id())));
     }
 
     @GetMapping("/{recruitmentId}")

@@ -102,7 +102,7 @@ public class Recruitment extends BaseEntity {
     }
 
     public void makeRelationshipWithRecruitmentUser(User user) {
-        var recruitmentUser = RecruitmentUser.from(this, user);
+        var recruitmentUser = RecruitmentUser.of(this, user);
         this.recruitmentUser = recruitmentUser;
         user.getRecruitmentUsers().add(recruitmentUser);
     }

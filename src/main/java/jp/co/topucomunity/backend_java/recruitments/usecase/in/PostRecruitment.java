@@ -25,9 +25,9 @@ public class PostRecruitment {
     private String subject;
     private String content;
 
-    public static PostRecruitment of(CreateRecruitmentRequest request, String userId) {
+    public static PostRecruitment of(CreateRecruitmentRequest request, Long userId) {
         return PostRecruitment.builder()
-                .userId(Long.valueOf(userId))
+                .userId(userId)
                 .recruitmentCategories(request.getRecruitmentCategories())
                 .progressMethods(request.getProgressMethods())
                 .techStacks(request.getTechStacks())

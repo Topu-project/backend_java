@@ -26,7 +26,7 @@ public class RecruitmentUser {
         this.user = user;
     }
 
-    public static RecruitmentUser from(Recruitment recruitment, User user) {
+    public static RecruitmentUser of(Recruitment recruitment, User user) {
         return new RecruitmentUser(recruitment, user);
     }
 }

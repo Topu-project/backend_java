@@ -3,6 +3,7 @@ package jp.co.topucomunity.backend_java.recruitments.apidocs;
 import jp.co.topucomunity.backend_java.recruitments.domain.TechStack;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -29,6 +30,11 @@ public class TechStacksApiDocsTest {
 
     private final MockMvc mvc;
     private final TechStacksRepository techStacksRepository;
+
+    @BeforeEach
+    void setUp() {
+        techStacksRepository.deleteAll();
+    }
 
     @DisplayName("기술스택의 전체목록을 확인할 수 있다.")
     @Test

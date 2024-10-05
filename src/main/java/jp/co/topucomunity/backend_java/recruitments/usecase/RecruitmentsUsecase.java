@@ -34,10 +34,6 @@ public class RecruitmentsUsecase {
         var foundUser = userRepository.findById(postRecruitment.getUserId())
                 .orElseThrow(UserNotFoundException::new);
 
-
-        // relationship
-        recruitment.makeRelationshipWithRecruitmentUser(foundUser);
-
         // relationship between recruitment, techStack, and recruitmentTechStack.
         postRecruitment.getTechStacks().stream()
                 .map(techName -> techStacksRepository.findByTechnologyName(techName).orElse(TechStack.from(techName)))
@@ -53,6 +49,9 @@ public class RecruitmentsUsecase {
                     var recruitmentPosition = RecruitmentPosition.of(position, recruitment);
                     recruitmentPosition.makeRelationship(position, recruitment);
                 });
+
+        // relationship
+        recruitment.makeRelationshipWithRecruitmentUser(foundUser);
 
         recruitmentsRepository.save(recruitment);
     }
