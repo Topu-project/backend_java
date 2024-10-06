@@ -14,31 +14,37 @@ import java.util.List;
 @Getter
 public class RecruitmentIndexPageResponse {
     private final Long id;
+    private final Long userId;
+    private final String nickname;
     private final RecruitmentCategories recruitmentCategory;
     private final List<String> techStacks;
     private final List<String> positions;
     private final LocalDate recruitmentDeadline;
     private final String subject;
     private final ProgressMethods progressMethods;
-    // TODO: ユーザ情報
-    // TODO: View数
+    private final Long views;
     // TODO: 参加人数
     // TODO: isNew いるのか?
 
     @Builder
-    private RecruitmentIndexPageResponse(Long id, RecruitmentCategories recruitmentCategory, List<String> techStacks, List<String> positions, LocalDate recruitmentDeadline, String subject, ProgressMethods progressMethods) {
+    private RecruitmentIndexPageResponse(Long id, Long userId, String nickname, RecruitmentCategories recruitmentCategory, List<String> techStacks, List<String> positions, LocalDate recruitmentDeadline, String subject, ProgressMethods progressMethods, Long views) {
         this.id = id;
+        this.userId = userId;
+        this.nickname = nickname;
         this.recruitmentCategory = recruitmentCategory;
         this.techStacks = techStacks;
         this.positions = positions;
         this.recruitmentDeadline = recruitmentDeadline;
         this.subject = subject;
         this.progressMethods = progressMethods;
+        this.views = views;
     }
 
     public static RecruitmentIndexPageResponse from(Recruitment recruitment) {
         return RecruitmentIndexPageResponse.builder()
                 .id(recruitment.getId())
+                .userId(recruitment.getRecruitmentUser().getUser().getUserId())
+                .nickname(recruitment.getRecruitmentUser().getUser().getNickname())
                 .recruitmentCategory(recruitment.getRecruitmentCategories())
                 .techStacks(recruitment.getRecruitmentTechStacks().stream()
                         .map(RecruitmentTechStack::getTechnologyName).toList())
@@ -47,6 +53,8 @@ public class RecruitmentIndexPageResponse {
                 .recruitmentDeadline(recruitment.getRecruitmentDeadline())
                 .progressMethods(recruitment.getProgressMethods())
                 .subject(recruitment.getSubject())
+                .views(recruitment.getViews())
                 .build();
     }
+
 }

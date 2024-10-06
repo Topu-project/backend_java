@@ -4,7 +4,7 @@ import jp.co.topucomunity.backend_java.recruitments.domain.TechStack;
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import lombok.RequiredArgsConstructor;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,9 +27,9 @@ class TechStacksControllerTest {
     private final TechStacksRepository techStacksRepository;
     private final MockMvc mockMvc;
 
-    @AfterEach
-    void tearDown() {
-        techStacksRepository.deleteAllInBatch();
+    @BeforeEach
+    void setUp() {
+        techStacksRepository.deleteAll();
     }
 
     @DisplayName("응모 기술 목록을 반환할 수 있다.")

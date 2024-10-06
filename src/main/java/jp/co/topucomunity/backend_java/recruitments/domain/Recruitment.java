@@ -5,6 +5,7 @@ import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
+import jp.co.topucomunity.backend_java.users.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class Recruitment extends BaseEntity {
     private LocalDate recruitmentDeadline;
     private String contract;
     private String subject;
-    // TODO : Views
+    private Long views = 0L;
 
     @Lob
     private String content;
@@ -45,8 +46,11 @@ public class Recruitment extends BaseEntity {
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<RecruitmentPosition> recruitmentPositions = new ArrayList<>();
 
+    @OneToOne(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RecruitmentUser recruitmentUser;
+
     @Builder
-    private Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks) {
+    private Recruitment(RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<RecruitmentTechStack> recruitmentTechStacks, RecruitmentUser recruitmentUser) {
         this.recruitmentCategories = recruitmentCategories;
         this.progressMethods = progressMethods;
         this.numberOfPeople = numberOfPeople;
@@ -56,6 +60,7 @@ public class Recruitment extends BaseEntity {
         this.subject = subject;
         this.content = content;
         this.recruitmentTechStacks = recruitmentTechStacks;
+        this.recruitmentUser = recruitmentUser;
     }
 
     public static Recruitment from(PostRecruitment postRecruitment) {
@@ -94,5 +99,15 @@ public class Recruitment extends BaseEntity {
 
     public void makeRelationshipWithRecruitmentPosition(RecruitmentPosition recruitmentPosition) {
         this.recruitmentPositions.add(recruitmentPosition);
+    }
+
+    public void makeRelationshipWithRecruitmentUser(User user) {
+        var recruitmentUser = RecruitmentUser.of(this, user);
+        this.recruitmentUser = recruitmentUser;
+        user.getRecruitmentUsers().add(recruitmentUser);
+    }
+
+    public void plusViews() {
+        this.views++;
     }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 @Getter
 public class RecruitmentResponse {
     private final Long id;
+    private final Long userId;
+    private final String nickname;
     private final RecruitmentCategories recruitmentCategories;
     private final ProgressMethods progressMethods;
     private final int numberOfPeople;
@@ -26,8 +28,10 @@ public class RecruitmentResponse {
     private final List<String> positions;
 
     @Builder
-    private RecruitmentResponse(Long id, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<String> techStacks, List<String> positions) {
+    private RecruitmentResponse(Long id, Long userId, String nickname, RecruitmentCategories recruitmentCategories, ProgressMethods progressMethods, int numberOfPeople, int progressPeriod, LocalDate recruitmentDeadline, String contract, String subject, String content, List<String> techStacks, List<String> positions) {
         this.id = id;
+        this.userId = userId;
+        this.nickname = nickname;
         this.recruitmentCategories = recruitmentCategories;
         this.progressMethods = progressMethods;
         this.numberOfPeople = numberOfPeople;
@@ -43,6 +47,8 @@ public class RecruitmentResponse {
     public static RecruitmentResponse from(Recruitment recruitment) {
         return RecruitmentResponse.builder()
                 .id(recruitment.getId())
+                .userId(recruitment.getRecruitmentUser().getUser().getUserId())
+                .nickname(recruitment.getRecruitmentUser().getUser().getNickname())
                 .recruitmentCategories(recruitment.getRecruitmentCategories())
                 .progressMethods(recruitment.getProgressMethods())
                 .numberOfPeople(recruitment.getNumberOfPeople())

@@ -1,6 +1,8 @@
 package jp.co.topucomunity.backend_java.recruitments.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
+import jp.co.topucomunity.backend_java.recruitments.config.TopuMockUser;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -8,6 +10,8 @@ import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
+import jp.co.topucomunity.backend_java.users.domain.User;
+import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,9 +49,11 @@ class RecruitmentsControllerTest {
     private final PositionsRepository positionsRepository;
     private final RecruitmentTechStacksRepository recruitmentTechStacksRepository;
     private final RecruitmentPositionsRepository recruitmentPositionsRepository;
+    private final UserRepository userRepository;
 
     @AfterEach
     void tearDown() {
+        userRepository.deleteAll();
         recruitmentTechStacksRepository.deleteAllInBatch();
         recruitmentPositionsRepository.deleteAllInBatch();
         positionsRepository.deleteAllInBatch();
@@ -54,6 +61,7 @@ class RecruitmentsControllerTest {
         recruitmentsRepository.deleteAllInBatch();
     }
 
+    @TopuMockUser
     @DisplayName("응모글을 작성하면 응모글 목록에 담긴다.")
     @Test
     void postRecruitment() throws Exception {
@@ -73,10 +81,16 @@ class RecruitmentsControllerTest {
                 .build();
         var jsonString = objectMapper.writeValueAsString(request);
 
+        var principal = (OAuth2UserPrincipal) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
         // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/recruitments")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(jsonString)
+                        .cookie(new MockCookie("SESSION", principal.getJws()))
+                )
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -173,24 +187,14 @@ class RecruitmentsControllerTest {
                 .andDo(print());
     }
 
-    // @DisplayName("응모글을 작성할 때 포지션을 선택해서 등록하면 포지션도 같이 등록 된다.")
-    // TODO : 포지션 등록 확인
-
-    // @DisplayName("응모글을 작성할 때 포지션을 선택해서 등록하면 이미 등록된 포지션일 경우 중복 등록되지 않는다.")
-    // TODO : 포지션 중복 등록 확인
-
-    // @DisplayName("응모글을 작성할 때 기술스택을 선택해서 등록하면 기술스택도 같이 등록 된다.")
-    // TODO : 기술스택 등록 확인
-
-    // @DisplayName("응모글을 작성에서 기술스택을 선택해서 등록할 때 이미 등록된 기술스택일 경우 중복 등록되지 않는다.")
-    // TODO : 기술스택 중복 등록 확인
-
     @Transactional
     @DisplayName("응모ID로 해당 응모 상세페이지를 조회 할 수 있다.")
     @Test
     void getRecruitmentById() throws Exception {
         // given
+        var user = User.of("google", "test@test.com");
         var recruitment = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
+        recruitment.makeRelationshipWithRecruitmentUser(user);
 
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
@@ -386,8 +390,9 @@ class RecruitmentsControllerTest {
     @Test
     void getRecruitments() throws Exception {
         // given
-        // TODO : Require cleansing
+        var user = User.of("google", "test@test.com");
         var recruitment1 = createRecruitment(TechStack.from("Java"), Position.from("Backend"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
+        recruitment1.makeRelationshipWithRecruitmentUser(user);
 
         var techStack2 = TechStack.from("Kotlin");
         var position2 = Position.from("BackendEngineer");
@@ -402,6 +407,8 @@ class RecruitmentsControllerTest {
                 .content("사실은 Android 앱")
                 .recruitmentTechStacks(new ArrayList<>())
                 .build();
+        recruitment2.makeRelationshipWithRecruitmentUser(user);
+
         var recruitmentPosition2 = RecruitmentPosition.of(position2, recruitment2);
         var recruitmentTechStack2 = RecruitmentTechStack.of(techStack2, recruitment2);
         recruitmentPosition2.makeRelationship(position2, recruitment2);
@@ -413,13 +420,13 @@ class RecruitmentsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(savedRecruitments.get(1).getId().intValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].recruitmentCategory", is(RecruitmentCategories.STUDY.name())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Kotlin")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].positions[0]", is("BackendEngineer")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].recruitmentDeadline", is("2024-08-13")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].subject", is("끝내주는 Kotlin 서비스를 개발 해 봅시다.")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()", is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id", is(savedRecruitments.get(1).getId().intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].recruitmentCategory", is(RecruitmentCategories.STUDY.name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].techStacks[0]", is("Kotlin")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].positions[0]", is("BackendEngineer")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].recruitmentDeadline", is("2024-08-13")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].subject", is("끝내주는 Kotlin 서비스를 개발 해 봅시다.")))
                 .andDo(print());
 
     }
@@ -428,43 +435,54 @@ class RecruitmentsControllerTest {
     @Test
     void getSearchResultsTechStacks() throws Exception {
         // given
-        var recruitments = IntStream.range(0, 50)
-                .mapToObj(i ->
-                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
-                .toList();
-        recruitmentsRepository.saveAll(recruitments);
+        var user = User.of("google", "test@test.com");
+        var position8 = createRecruitment(TechStack.from("Java8"), Position.from("position8"), null, null);
+        var position17 = createRecruitment(TechStack.from("Java17"), Position.from("position17"), null, null);
+        var position21 = createRecruitment(TechStack.from("Java21"), Position.from("position21"), null, null);
+
+        position8.makeRelationshipWithRecruitmentUser(user);
+        position17.makeRelationshipWithRecruitmentUser(user);
+        position21.makeRelationshipWithRecruitmentUser(user);
+
+        recruitmentsRepository.saveAll(List.of(position8, position17, position21));
 
         var searchString = "techStacks=Java8,Java17,Java21";
 
         // expected
         mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(3)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[2].techStacks[0]", is("Java8")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].techStacks[0]", is("Java17")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Java21")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()", is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].techStacks[0]", is("Java8")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].techStacks[0]", is("Java17")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].techStacks[0]", is("Java21")))
                 .andDo(print());
     }
+
 
     @DisplayName("선택된 응모 포지션과 관련한 응모글의 목록을 확인할 수 있다.")
     @Test
     void getSearchResultsPositions() throws Exception {
         // given
-        var recruitments = IntStream.range(0, 50)
-                .mapToObj(i ->
-                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
-                .toList();
-        recruitmentsRepository.saveAll(recruitments);
+        var user = User.of("google", "test@test.com");
+        var position8 = createRecruitment(TechStack.from("Java8"), Position.from("position8"), null, null);
+        var position17 = createRecruitment(TechStack.from("Java17"), Position.from("position17"), null, null);
+        var position21 = createRecruitment(TechStack.from("Java21"), Position.from("position21"), null, null);
+
+        position8.makeRelationshipWithRecruitmentUser(user);
+        position17.makeRelationshipWithRecruitmentUser(user);
+        position21.makeRelationshipWithRecruitmentUser(user);
+
+        recruitmentsRepository.saveAll(List.of(position8, position17, position21));
 
         var searchString = "positions=position8,position17,position21";
 
         // expected
         mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(3)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[2].positions[0]", is("position8")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].positions[0]", is("position17")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].positions[0]", is("position21")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()", is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].positions[0]", is("position8")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].positions[0]", is("position17")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].positions[0]", is("position21")))
                 .andDo(print());
     }
 
@@ -472,24 +490,35 @@ class RecruitmentsControllerTest {
     @Test
     void getSearchResultsPositionsOrTechStacks() throws Exception {
         // given
-        var recruitments = IntStream.range(0, 50)
-                .mapToObj(i ->
-                        createRecruitment(TechStack.from("Java" + i), Position.from("position" + i), null, null))
-                .toList();
-        recruitmentsRepository.saveAll(recruitments);
+        var user = User.of("google", "test@test.com");
+        var position8 = createRecruitment(TechStack.from("Java8"), Position.from("backend"), null, null);
+        var position17 = createRecruitment(TechStack.from("Java17"), Position.from("frontend"), null, null);
+        var position21 = createRecruitment(TechStack.from("Java21"), Position.from("infra"), null, null);
+        var backend = createRecruitment(TechStack.from("Java22"), Position.from("backend2"), null, null);
+        var frontend = createRecruitment(TechStack.from("Java23"), Position.from("frontend2"), null, null);
+        var infra = createRecruitment(TechStack.from("Java20"), Position.from("infra2"), null, null);
 
-        var searchString = "positions=position1,position3,position7&techStacks=Java8,Java17,Java21";
+        position8.makeRelationshipWithRecruitmentUser(user);
+        position17.makeRelationshipWithRecruitmentUser(user);
+        position21.makeRelationshipWithRecruitmentUser(user);
+        backend.makeRelationshipWithRecruitmentUser(user);
+        frontend.makeRelationshipWithRecruitmentUser(user);
+        infra.makeRelationshipWithRecruitmentUser(user);
+
+        recruitmentsRepository.saveAll(List.of(position8, position17, position21, backend, frontend, infra));
+
+        var searchString = "positions=backend,frontend,infra&techStacks=Java20,Java23,Java22";
 
         // expected
         mockMvc.perform(MockMvcRequestBuilders.get("/recruitments/query?" + searchString))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", is(6)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].techStacks[0]", is("Java21")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].techStacks[0]", is("Java17")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[2].techStacks[0]", is("Java8")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[3].positions[0]", is("position7")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[4].positions[0]", is("position3")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[5].positions[0]", is("position1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()", is(6)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].techStacks[0]", is("Java20")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].techStacks[0]", is("Java23")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].techStacks[0]", is("Java22")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[3].positions[0]", is("infra")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[4].positions[0]", is("frontend")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[5].positions[0]", is("backend")))
                 .andDo(print());
     }
 

@@ -1,6 +1,8 @@
 package jp.co.topucomunity.backend_java.recruitments.apidocs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.co.topucomunity.backend_java.config.OAuth2UserPrincipal;
+import jp.co.topucomunity.backend_java.recruitments.config.TopuMockUser;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.CreateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.controller.in.UpdateRecruitmentRequest;
 import jp.co.topucomunity.backend_java.recruitments.domain.*;
@@ -8,18 +10,23 @@ import jp.co.topucomunity.backend_java.recruitments.domain.enums.ProgressMethods
 import jp.co.topucomunity.backend_java.recruitments.domain.enums.RecruitmentCategories;
 import jp.co.topucomunity.backend_java.recruitments.repository.*;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
+import jp.co.topucomunity.backend_java.users.domain.User;
+import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jp.co.topucomunity.backend_java.users.domain.User.createFirstLoggedInUser;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -48,14 +56,22 @@ public class RecruitmentApiDocsTest {
     private final RecruitmentPositionsRepository recruitmentPositionsRepository;
     private final PositionsRepository positionsRepository;
     private final TechStacksRepository techStacksRepository;
+    private final UserRepository userRepository;
+    private final RecruitmentUserRepository recruitmentUserRepository;
+
+    @BeforeEach
+    void setUp() {
+        recruitmentsRepository.deleteAll();
+        recruitmentTechStacksRepository.deleteAll();
+        recruitmentPositionsRepository.deleteAll();
+        positionsRepository.deleteAll();
+        techStacksRepository.deleteAll();
+    }
 
     @AfterEach
     void tearDown() {
-        recruitmentPositionsRepository.deleteAllInBatch();
-        recruitmentTechStacksRepository.deleteAllInBatch();
-        positionsRepository.deleteAllInBatch();
-        techStacksRepository.deleteAllInBatch();
-        recruitmentsRepository.deleteAllInBatch();
+        userRepository.deleteAll();
+        recruitmentUserRepository.deleteAll();
     }
 
     @DisplayName("응모 ID 를 이용하여 해당 응모글을 응모글 목록에서 제거할 수 있다.")
@@ -100,8 +116,19 @@ public class RecruitmentApiDocsTest {
     void getRecruitmentById() throws Exception {
 
         // given
+        var user = User.builder()
+                .email("test-user@test.com")
+                .nickname("test-user")
+                .position(Position.from("Backend"))
+                .isPublicAffiliation(false)
+                .personalHistoryYear(5)
+                .selfIntroduction("안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.")
+                .links("https://github.com/wooah/backend/god/king/good, https://github.com/wooah/backend/god/king/good")
+                .isFirstLogin(true)
+                .build();
+
         var techStack = TechStack.from("Java");
-        var position = Position.from("Backend");
+        var position = Position.from("Infra");
         var recruitment = Recruitment.builder()
                 .recruitmentCategories(RecruitmentCategories.STUDY)
                 .progressMethods(ProgressMethods.ALL)
@@ -118,6 +145,8 @@ public class RecruitmentApiDocsTest {
         recruitmentPosition.makeRelationship(position, recruitment);
         recruitmentTechStack.makeRelationship(techStack, recruitment);
 
+        recruitment.makeRelationshipWithRecruitmentUser(user);
+
         var savedRecruitment = recruitmentsRepository.save(recruitment);
 
         // expected
@@ -131,6 +160,8 @@ public class RecruitmentApiDocsTest {
                         ),
                         PayloadDocumentation.responseFields(
                                 fieldWithPath("id").description("응모글 ID"),
+                                fieldWithPath("userId").description("작성자 ID"),
+                                fieldWithPath("nickname").description("작성자 이름"),
                                 fieldWithPath("recruitmentCategories").description("응모 카테고리"),
                                 fieldWithPath("progressMethods").description("진행 방법"),
                                 fieldWithPath("numberOfPeople").description("모집 인원"),
@@ -145,6 +176,7 @@ public class RecruitmentApiDocsTest {
                 .andDo(print());
     }
 
+    @TopuMockUser
     @DisplayName("응모글을 작성하면 응모글 목록에 담긴다.")
     @Test
     void postRecruitment() throws Exception {
@@ -153,8 +185,11 @@ public class RecruitmentApiDocsTest {
         var request = createDefaultRecruitmentRequest();
         var jsonString = objectMapper.writeValueAsString(request);
 
+        var principal = (OAuth2UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         // expected
         mvc.perform(RestDocumentationRequestBuilders.post("/recruitments")
+                        .cookie(new MockCookie("SESSION", principal.getJws()))
                         .content(jsonString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -178,10 +213,21 @@ public class RecruitmentApiDocsTest {
     @DisplayName("작성한 응모글을 수정한다.")
     @Test
     void updateRecruitment() throws Exception {
+        var savedUser = userRepository.save(createFirstLoggedInUser(
+                "test-user@test.com",
+                "test-user",
+                Position.from("Frontend"),
+                "우아한형제들",
+                false,
+                5,
+                "안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.",
+                "https://github.com/wooah/backend/god/king/good, https://github.com/wooah/backend/god/king/good",
+                true
+        ));
 
         // given
         var createRecruitmentRequest = createDefaultRecruitmentRequest();
-        var postRecruitment = PostRecruitment.from(createRecruitmentRequest);
+        var postRecruitment = PostRecruitment.of(createRecruitmentRequest, savedUser.getUserId());
         var recruitment = Recruitment.from(postRecruitment);
         recruitmentsRepository.save(recruitment);
 
@@ -218,11 +264,29 @@ public class RecruitmentApiDocsTest {
     @Test
     void searchResult() throws Exception {
         // given
+        var user = User.builder()
+                .email("test-user@test.com")
+                .nickname("test-user")
+                .position(Position.from("Backend"))
+                .isPublicAffiliation(false)
+                .personalHistoryYear(5)
+                .selfIntroduction("안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.")
+                .links("https://github.com/wooah/backend/god/king/good, https://github.com/wooah/backend/god/king/good")
+                .isFirstLogin(true)
+                .build();
+
         var recruitment1 = createRecruitment(TechStack.from("Java"), Position.from("バックエンド"), RecruitmentCategories.STUDY, ProgressMethods.ALL);
         var recruitment2 = createRecruitment(TechStack.from("React"), Position.from("フロントエンド"), RecruitmentCategories.PROJECT, ProgressMethods.ONLINE);
         var recruitment3 = createRecruitment(TechStack.from("Vue"), Position.from("Frontend"), RecruitmentCategories.PROJECT, ProgressMethods.ONLINE);
         var recruitment4 = createRecruitment(TechStack.from("Docker"), Position.from("インフラ"), RecruitmentCategories.STUDY, ProgressMethods.ONLINE);
         var recruitment5 = createRecruitment(TechStack.from("AWS"), Position.from("DevOps"), RecruitmentCategories.PROJECT, ProgressMethods.OFFLINE);
+
+        recruitment1.makeRelationshipWithRecruitmentUser(user);
+        recruitment2.makeRelationshipWithRecruitmentUser(user);
+        recruitment3.makeRelationshipWithRecruitmentUser(user);
+        recruitment4.makeRelationshipWithRecruitmentUser(user);
+        recruitment5.makeRelationshipWithRecruitmentUser(user);
+
         recruitmentsRepository.saveAll(List.of(recruitment1, recruitment2, recruitment3, recruitment4, recruitment5));
 
         var searchQueries = "page=1&size=10&categories=STUDY&positions=バックエンド,フロントエンド&progressMethods=ALL&techStacks=React&search=끝내주는";
@@ -242,13 +306,17 @@ public class RecruitmentApiDocsTest {
                                 RequestDocumentation.parameterWithName("search").description("제목")
                         ),
                         PayloadDocumentation.responseFields(
-                                fieldWithPath("[].id").description("응모글 ID"),
-                                fieldWithPath("[].recruitmentCategory").description("응모 카테고리"),
-                                fieldWithPath("[].progressMethods").description("진행 방법"),
-                                fieldWithPath("[].recruitmentDeadline").description("마감일"),
-                                fieldWithPath("[].subject").description("제목"),
-                                fieldWithPath("[].techStacks").description("기술스택"),
-                                fieldWithPath("[].positions").description("응모 포지션")
+                                fieldWithPath("count").description("응모글 전체 갯수"),
+                                fieldWithPath("data[].id").description("응모글 ID"),
+                                fieldWithPath("data[].nickname").description("작성자 닉네임"),
+                                fieldWithPath("data[].userId").description("작성자 ID"),
+                                fieldWithPath("data[].recruitmentCategory").description("응모 카테고리"),
+                                fieldWithPath("data[].progressMethods").description("진행 방법"),
+                                fieldWithPath("data[].recruitmentDeadline").description("마감일"),
+                                fieldWithPath("data[].subject").description("제목"),
+                                fieldWithPath("data[].techStacks").description("기술스택"),
+                                fieldWithPath("data[].positions").description("응모 포지션"),
+                                fieldWithPath("data[].views").description("조회수")
                         )))
                 .andDo(print());
 

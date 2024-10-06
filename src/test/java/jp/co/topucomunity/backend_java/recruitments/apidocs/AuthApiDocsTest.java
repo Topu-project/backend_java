@@ -6,6 +6,7 @@ import jp.co.topucomunity.backend_java.recruitments.config.TopuMockUser;
 import jp.co.topucomunity.backend_java.recruitments.domain.Position;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
 import jp.co.topucomunity.backend_java.users.controller.in.SignUpRequest;
+import jp.co.topucomunity.backend_java.users.domain.User;
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static jp.co.topucomunity.backend_java.users.domain.User.createFirstLoggedInUser;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,17 +56,18 @@ public class AuthApiDocsTest {
         // given
         var backend = Position.from("Backend");
 
-        var savedUser = userRepository.save(createFirstLoggedInUser(
-                "test-user@test.com",
-                "test-user",
-                backend,
-                "우아한형제들",
-                false,
-                5,
-                "안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.",
-                "https://github.com/wooah/backend/god/king/good, https://github.com/wooah/backend/god/king/good",
-                true
-        ));
+
+        var user = User.builder()
+                .email("test-user@test.com")
+                .nickname("test-user")
+                .position(Position.from("Backend"))
+                .isPublicAffiliation(false)
+                .personalHistoryYear(5)
+                .selfIntroduction("안녕하세요 우아한형제들에서 결제 서비스를 담당하고 있는 백엔드 엔지니어입니다.")
+                .links("https://github.com/wooah/backend/god/king/good, https://github.com/wooah/backend/god/king/good")
+                .isFirstLogin(true)
+                .build();
+        var savedUser = userRepository.save(user);
 
         // expected
         mockMvc.perform(RestDocumentationRequestBuilders.get("/auth/{userId}", savedUser.getUserId()))
@@ -81,6 +82,7 @@ public class AuthApiDocsTest {
                                 PayloadDocumentation.fieldWithPath("email").description("유저 Email 주소"),
                                 PayloadDocumentation.fieldWithPath("nickname").description("유저 닉네임"),
                                 PayloadDocumentation.fieldWithPath("position").description("유저 직책"),
+                                PayloadDocumentation.fieldWithPath("techStacks").description("유저 관심 기술 스택"),
                                 PayloadDocumentation.fieldWithPath("affiliation").description("유저 소속"),
                                 PayloadDocumentation.fieldWithPath("isPublicAffiliation").description("유저 소속 공개 플래그"),
                                 PayloadDocumentation.fieldWithPath("personalHistoryYear").description("유저 경력"),

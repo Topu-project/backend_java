@@ -4,7 +4,7 @@ import jp.co.topucomunity.backend_java.recruitments.domain.Position;
 import jp.co.topucomunity.backend_java.recruitments.repository.PositionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,9 +27,9 @@ class PositionsControllerTest {
     private final PositionsRepository positionsRepository;
     private final MockMvc mockMvc;
 
-    @AfterEach
-    void tearDown() {
-        positionsRepository.deleteAllInBatch();
+    @BeforeEach
+    void setUp() {
+        positionsRepository.deleteAll();
     }
 
     @DisplayName("응모 포지션 목록을 반환할 수 있다.")
