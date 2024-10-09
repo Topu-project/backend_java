@@ -7,6 +7,7 @@ import jp.co.topucomunity.backend_java.users.exception.UnAuthenticationException
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import jp.co.topucomunity.backend_java.users.usecase.UserUsecase;
 import jp.co.topucomunity.backend_java.users.usecase.in.RegisterUser;
+import jp.co.topucomunity.backend_java.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ public class AuthController {
     private final UserUsecase userUsecase;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
 
     @GetMapping("/login")
@@ -85,5 +87,39 @@ public class AuthController {
         // TODO 사용자 ID 반환용 DTO 작성
         return ResponseEntity.ok(Map.of("userId", "test"));
 
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<?> authenticateGoogleUser(@RequestBody Map<String, String> request) {
+        String idTokenValue = request.get("idToken");
+        if (idTokenValue == null) {
+            throw new UnAuthenticationException();
+        }
+
+        // 구글 클라이언트 등록 정보 가져오기
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("google");
+
+        // TODO JWT Token 검증용 클래스 생성 - ID 토큰 검증
+        JwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(clientRegistration.getProviderDetails().getIssuerUri());
+        Jwt jwt = null;
+        try {
+            jwt = jwtDecoder.decode(idTokenValue);
+        } catch (JwtException e) {
+            System.out.println("e = " + e);
+        }
+
+        // 사용자 정보 추출
+        String sub = jwt.getSubject();
+        String email = jwt.getClaimAsString("email");
+        String name = jwt.getClaimAsString("name");
+        String picture = jwt.getClaimAsString("picture");
+
+        // 사용자 등록 또는 업데이트
+        // User user = userService.registerOrUpdateUser(googleId, email, name, picture);
+
+        // JWT Token 생성
+        // Refresh Token 생성
+        // 응답 데이터 말기
+        return null;
     }
 }
