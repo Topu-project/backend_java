@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OidcAuthService extends OidcUserService {
+public class OidcAuthUsecase extends OidcUserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;

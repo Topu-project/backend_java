@@ -2,7 +2,7 @@ package jp.co.topucomunity.backend_java.config;
 
 import jp.co.topucomunity.backend_java.config.resolver.JwtResolver;
 import jp.co.topucomunity.backend_java.users.controller.OidcLoginSuccessController;
-import jp.co.topucomunity.backend_java.users.usecase.OidcAuthService;
+import jp.co.topucomunity.backend_java.users.usecase.OidcAuthUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,7 +32,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     // private final GoogleOAuth2UserUsecase googleOAuth2UserUsecase;
     // private final OAuth2LoginSuccessController oauth2LoginSuccessController;
     private final OidcLoginSuccessController oidcLoginSuccessController;
-    private final OidcAuthService oidcAuthService;
+    private final OidcAuthUsecase oidcAuthUsecase;
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,7 +45,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .anyRequest().permitAll());
         http.oauth2Login(oauth2 -> {
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
-                userInfoEndpoint.oidcUserService(oidcAuthService);
+                userInfoEndpoint.oidcUserService(oidcAuthUsecase);
                 // userInfoEndpoint.userService(googleOAuth2UserUsecase);
             }).successHandler(oidcLoginSuccessController);
         });
