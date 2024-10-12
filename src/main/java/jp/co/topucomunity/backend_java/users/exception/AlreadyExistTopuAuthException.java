@@ -2,15 +2,15 @@ package jp.co.topucomunity.backend_java.users.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class AlreadyExistUserException extends UserException {
+public class AlreadyExistTopuAuthException extends TopuAuthException {
 
     private static final String MESSAGE = "이미 등록된 유저입니다.";
 
-    public AlreadyExistUserException() {
+    public AlreadyExistTopuAuthException() {
         super(MESSAGE);
     }
 
-    public AlreadyExistUserException(Throwable cause) {
+    public AlreadyExistTopuAuthException(Throwable cause) {
         super(MESSAGE, cause);
     }
 

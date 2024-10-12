@@ -11,7 +11,7 @@ import jp.co.topucomunity.backend_java.recruitments.repository.RecruitmentsRepos
 import jp.co.topucomunity.backend_java.recruitments.repository.TechStacksRepository;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.PostRecruitment;
 import jp.co.topucomunity.backend_java.recruitments.usecase.in.UpdateRecruitment;
-import jp.co.topucomunity.backend_java.users.exception.UserNotFoundException;
+import jp.co.topucomunity.backend_java.users.exception.TopuAuthNotFoundException;
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class RecruitmentsUsecase {
         var recruitment = Recruitment.from(postRecruitment);
 
         var foundUser = userRepository.findById(postRecruitment.getUserId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(TopuAuthNotFoundException::new);
 
         // relationship between recruitment, techStack, and recruitmentTechStack.
         postRecruitment.getTechStacks().stream()

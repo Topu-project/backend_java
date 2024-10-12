@@ -5,6 +5,7 @@ import jp.co.topucomunity.backend_java.users.controller.OidcLoginSuccessControll
 import jp.co.topucomunity.backend_java.users.usecase.OidcAuthUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +29,13 @@ import java.util.List;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
+    @Value("${topu.cookie.name}")
+    private String topuCookieName;
+
+    @Value("${login.success.redirect.url}")
+    private String loginSuccessRedirectUrl;
+
     private final JwtResolver jwtResolver;
-    // private final GoogleOAuth2UserUsecase googleOAuth2UserUsecase;
-    // private final OAuth2LoginSuccessController oauth2LoginSuccessController;
     private final OidcLoginSuccessController oidcLoginSuccessController;
     private final OidcAuthUsecase oidcAuthUsecase;
 
@@ -39,22 +44,22 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(configurationSource()));
         http.authorizeHttpRequests(httpRequest -> httpRequest
-                .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                 .requestMatchers("/auth/login").authenticated()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                 .anyRequest().permitAll());
         http.oauth2Login(oauth2 -> {
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
                 userInfoEndpoint.oidcUserService(oidcAuthUsecase);
-                // userInfoEndpoint.userService(googleOAuth2UserUsecase);
             }).successHandler(oidcLoginSuccessController);
         });
         http.logout(httpSecurityLogoutConfigurer ->
                 httpSecurityLogoutConfigurer
                         .logoutUrl("/auth/logout")
-                        .deleteCookies("SESSION")
                         .clearAuthentication(true)
-                        .logoutSuccessUrl("http://localhost:3000"));
+                        .invalidateHttpSession(true)
+                        .deleteCookies(topuCookieName)
+                        .logoutSuccessUrl(loginSuccessRedirectUrl));
         return http.build();
     }
 
@@ -62,7 +67,6 @@ public class SecurityConfig implements WebMvcConfigurer {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

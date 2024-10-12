@@ -1,6 +1,5 @@
 package jp.co.topucomunity.backend_java.users.controller;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jp.co.topucomunity.backend_java.config.GoogleOidcUser;
@@ -25,7 +24,7 @@ public class OidcLoginSuccessController implements AuthenticationSuccessHandler 
     private String topuCookieName;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         var oidcUser = (GoogleOidcUser) authentication.getPrincipal();
 
         var cookie = ResponseCookie.from(topuCookieName, oidcUser.getAccessToken())

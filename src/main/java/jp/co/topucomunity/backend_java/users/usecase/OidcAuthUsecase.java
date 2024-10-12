@@ -23,15 +23,12 @@ public class OidcAuthUsecase extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         var oidcUser = super.loadUser(userRequest);
 
-        // check user
         var foundUser = userRepository.findUserByEmail(oidcUser.getEmail());
         var user = foundUser.orElseGet(() -> userRepository.save(User.from(oidcUser)));
 
-        // create accessToken & refreshToken
         var accessToken = jwtUtil.generateToken(user.getUserId());
         refreshTokenService.storeRefreshToken(user.getUserId(), accessToken);
 
-        // return oidc user
         return GoogleOidcUser.of(user, oidcUser, accessToken);
     }
 }
