@@ -7,6 +7,7 @@ import jp.co.topucomunity.backend_java.users.exception.UnAuthenticationException
 import jp.co.topucomunity.backend_java.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -22,6 +23,9 @@ import java.util.Objects;
 @Component
 @Slf4j
 public class JwtResolver implements HandlerMethodArgumentResolver {
+
+    @Value("${topu.cookie.name}")
+    private String topuCookieName;
 
     private final JwtUtil jwtUtil;
 
@@ -40,7 +44,7 @@ public class JwtResolver implements HandlerMethodArgumentResolver {
             throw new IllegalClassFormatException();
         }
 
-        var sessionCookie = findCookieByName(httpServletRequest.getCookies(), "_topu_cookie");
+        var sessionCookie = findCookieByName(httpServletRequest.getCookies(), topuCookieName);
 
         var claimsJws = jwtUtil.verifyAndParseToken(sessionCookie.getValue());
 
