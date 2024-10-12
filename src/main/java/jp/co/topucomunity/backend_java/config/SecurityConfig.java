@@ -1,8 +1,8 @@
 package jp.co.topucomunity.backend_java.config;
 
 import jp.co.topucomunity.backend_java.config.resolver.JwtResolver;
-import jp.co.topucomunity.backend_java.users.controller.OAuth2LoginSuccessController;
-import jp.co.topucomunity.backend_java.users.usecase.GoogleOAuth2UserUsecase;
+import jp.co.topucomunity.backend_java.users.controller.OidcLoginSuccessController;
+import jp.co.topucomunity.backend_java.users.usecase.OidcAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,21 +29,25 @@ import java.util.List;
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final JwtResolver jwtResolver;
-    private final GoogleOAuth2UserUsecase googleOAuth2UserUsecase;
-    private final OAuth2LoginSuccessController oauth2LoginSuccessController;
+    // private final GoogleOAuth2UserUsecase googleOAuth2UserUsecase;
+    // private final OAuth2LoginSuccessController oauth2LoginSuccessController;
+    private final OidcLoginSuccessController oidcLoginSuccessController;
+    private final OidcAuthService oidcAuthService;
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(configurationSource()));
         http.authorizeHttpRequests(httpRequest -> httpRequest
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                 .requestMatchers("/auth/login").authenticated()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().permitAll());
         http.oauth2Login(oauth2 -> {
             oauth2.userInfoEndpoint(userInfoEndpoint -> {
-                userInfoEndpoint.userService(googleOAuth2UserUsecase);
-            }).successHandler(oauth2LoginSuccessController);
+                userInfoEndpoint.oidcUserService(oidcAuthService);
+                // userInfoEndpoint.userService(googleOAuth2UserUsecase);
+            }).successHandler(oidcLoginSuccessController);
         });
         http.logout(httpSecurityLogoutConfigurer ->
                 httpSecurityLogoutConfigurer

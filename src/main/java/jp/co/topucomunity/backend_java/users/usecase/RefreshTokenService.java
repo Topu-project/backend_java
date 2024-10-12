@@ -15,7 +15,8 @@ public class RefreshTokenService {
     private final static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(30);
 
     public void storeRefreshToken(Long userId, String refreshToken) {
-        redisTemplate.opsForValue().set("refreshToken:" + refreshToken, String.valueOf(userId), REFRESH_TOKEN_DURATION);
+        // TODO release 1.0 이후에 대응
+        //redisTemplate.opsForValue().set("refreshToken:" + refreshToken, String.valueOf(userId), REFRESH_TOKEN_DURATION);
     }
 
     public Long getUserIdByRefreshToken(String refreshToken) {

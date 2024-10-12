@@ -45,7 +45,7 @@ public class JwtResolver implements HandlerMethodArgumentResolver {
 
         // find session cookie
         var sessionCookie = Arrays.stream(httpServletRequest.getCookies())
-                .filter(cookie -> cookie.getName().equals("SESSION"))
+                .filter(cookie -> cookie.getName().equals("_topu_cookie"))
                 .findAny()
                 .orElseThrow(UnAuthenticationException::new);
 
@@ -66,7 +66,7 @@ public class JwtResolver implements HandlerMethodArgumentResolver {
                 throw new UnAuthenticationException();
             }
 
-            return new UserSession(claimsJws.getPayload().getId());
+            return new UserSession(claimsJws.getPayload().getSubject());
         } catch (JwtException e) {
             throw new UnAuthenticationException(e);
         }

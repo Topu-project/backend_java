@@ -20,9 +20,10 @@ public class UserResponse {
     private final Integer personalHistoryYear;
     private final String selfIntroduction;
     private final List<String> links;
+    private final boolean isFirstLogin;
 
     @Builder
-    private UserResponse(Integer personalHistoryYear, Long userId, String email, String nickname, String position, List<String> techStacks, String affiliation, Boolean isPublicAffiliation, String selfIntroduction, List<String> links) {
+    private UserResponse(Integer personalHistoryYear, Long userId, String email, String nickname, String position, List<String> techStacks, String affiliation, Boolean isPublicAffiliation, String selfIntroduction, List<String> links, boolean isFirstLogin) {
         this.userId = userId;
         this.email = email;
         this.nickname = nickname;
@@ -33,6 +34,7 @@ public class UserResponse {
         this.personalHistoryYear = personalHistoryYear;
         this.selfIntroduction = selfIntroduction;
         this.links = links;
+        this.isFirstLogin = isFirstLogin;
     }
 
     public static UserResponse from(User user) {
@@ -47,6 +49,7 @@ public class UserResponse {
                 .personalHistoryYear(user.getPersonalHistoryYear())
                 .selfIntroduction(user.getSelfIntroduction())
                 .links(user.getLinks() == null || user.getLinks().isBlank() ? List.of() : Arrays.stream(user.getLinks().split(",")).map(String::trim).toList())
+                .isFirstLogin(user.isFirstLogin())
                 .build();
     }
 }

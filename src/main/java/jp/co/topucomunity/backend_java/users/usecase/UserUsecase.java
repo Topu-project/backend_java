@@ -4,6 +4,7 @@ import jp.co.topucomunity.backend_java.users.controller.out.UserResponse;
 import jp.co.topucomunity.backend_java.users.exception.AlreadyExistNicknameException;
 import jp.co.topucomunity.backend_java.users.exception.AlreadyExistUserException;
 import jp.co.topucomunity.backend_java.users.exception.UserNotFoundException;
+import jp.co.topucomunity.backend_java.users.repository.ClientRegistrationFacade;
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import jp.co.topucomunity.backend_java.users.usecase.in.RegisterUser;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserUsecase {
 
     private final UserRepository userRepository;
+    private final ClientRegistrationFacade clientRegistrationFacade;
 
     public UserResponse getUser(Long userId) {
         var foundUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -35,5 +37,18 @@ public class UserUsecase {
         });
 
         foundUser.registerFirstLoginUserInfo(registerUser);
+    }
+
+    public void oidcLogin(String accessToken, String idToken) {
+//         var jwt = JwtUtil.decodeToken(clientRegistrationFacade.getIssuerUri(), idToken);
+
+        // 사용자 정보 추출
+//        String sub = jwt.getSubject();
+//        String email = jwt.getClaimAsString("email");
+//        String name = jwt.getClaimAsString("name");
+//        String picture = jwt.getClaimAsString("picture");
+
+//        User.from(jwt);
+
     }
 }
