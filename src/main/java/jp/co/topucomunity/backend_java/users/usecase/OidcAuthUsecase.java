@@ -27,11 +27,10 @@ public class OidcAuthService extends OidcUserService {
         var sub = oidcUser.getSubject();
         var email = oidcUser.getEmail();
         var picture = oidcUser.getPicture();
-        var fullName = oidcUser.getFullName();
 
         // check user
         var foundUser = userRepository.findUserByEmail(email);
-        var user = foundUser.orElseGet(() -> userRepository.save(User.of(sub, email)));
+        var user = foundUser.orElseGet(() -> userRepository.save(User.of(sub, email, picture)));
 
         // create accessToken & refreshToken
         var accessToken = jwtUtil.generateToken(user.getUserId());
