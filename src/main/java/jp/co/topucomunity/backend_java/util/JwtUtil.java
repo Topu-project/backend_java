@@ -1,12 +1,12 @@
 package jp.co.topucomunity.backend_java.util;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jp.co.topucomunity.backend_java.users.exception.UnAuthenticationException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -29,25 +29,20 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public Jws<Claims> verifyAndParseToken(String token) {
         try {
-            Jwts.parser()
+            var claimsJws = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                     .build()
                     .parseSignedClaims(token);
-            return true;
-        } catch (JwtException e) {
+
+            if (!claimsJws.getPayload().getExpiration().after(new Date())) {
+                throw new UnAuthenticationException();
+            }
+
+            return claimsJws;
+        } catch (JwtException | IllegalArgumentException e) {
             throw new UnAuthenticationException(e);
         }
     }
-
-    public Jwt decodeToken(String issuerUri, String idToken) {
-        var jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
-        try {
-            return jwtDecoder.decode(idToken);
-        } catch (JwtException e) {
-            throw new UnAuthenticationException(e);
-        }
-    }
-
 }
