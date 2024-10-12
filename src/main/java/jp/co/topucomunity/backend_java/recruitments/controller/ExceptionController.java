@@ -5,6 +5,7 @@ import jp.co.topucomunity.backend_java.recruitments.controller.out.RecruitmentEr
 import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentException;
 import jp.co.topucomunity.backend_java.recruitments.exception.RecruitmentNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionController {
@@ -45,4 +47,11 @@ public class ExceptionController {
 
         return errorResponse;
     }
+
+//    @ExceptionHandler({Exception.class})
+//    @ResponseBody
+//    public void globalExceptionHandler(Exception e, HttpServletRequest request) {
+//
+//        log.error(e.getMessage(), e);
+//    }
 }

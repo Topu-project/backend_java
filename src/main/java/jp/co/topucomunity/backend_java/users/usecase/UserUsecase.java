@@ -2,8 +2,8 @@ package jp.co.topucomunity.backend_java.users.usecase;
 
 import jp.co.topucomunity.backend_java.users.controller.out.UserResponse;
 import jp.co.topucomunity.backend_java.users.exception.AlreadyExistNicknameException;
-import jp.co.topucomunity.backend_java.users.exception.AlreadyExistUserException;
-import jp.co.topucomunity.backend_java.users.exception.UserNotFoundException;
+import jp.co.topucomunity.backend_java.users.exception.AlreadyExistTopuAuthException;
+import jp.co.topucomunity.backend_java.users.exception.TopuAuthNotFoundException;
 import jp.co.topucomunity.backend_java.users.repository.UserRepository;
 import jp.co.topucomunity.backend_java.users.usecase.in.RegisterUser;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +17,17 @@ public class UserUsecase {
     private final UserRepository userRepository;
 
     public UserResponse getUser(Long userId) {
-        var foundUser = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        var foundUser = userRepository.findById(userId).orElseThrow(TopuAuthNotFoundException::new);
         return UserResponse.from(foundUser);
     }
 
     @Transactional
     public void signUp(RegisterUser registerUser) {
         var foundUser = userRepository.findById(registerUser.getUserId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(TopuAuthNotFoundException::new);
 
         if (!foundUser.isFirstLogin()) {
-            throw new AlreadyExistUserException();
+            throw new AlreadyExistTopuAuthException();
         }
 
         userRepository.findByNickname(registerUser.getNickname()).ifPresent(user -> {

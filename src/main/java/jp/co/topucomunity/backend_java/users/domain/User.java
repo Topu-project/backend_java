@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,6 @@ public class User {
     @Column(unique = true)
     private String nickname;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private Position position;
-
     private String affiliation;
 
     private boolean isPublicAffiliation;
@@ -47,16 +45,21 @@ public class User {
     @Lob
     private String selfIntroduction;
 
+    private String links;
+
+    private String picture;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private Position position;
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<TechStack> techStacks = new ArrayList<>();
-
-    private String links;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<RecruitmentUser> recruitmentUsers = new ArrayList<>();
 
     @Builder
-    public User(String sub, String email, String nickname, Position position, String affiliation, boolean isPublicAffiliation, boolean isFirstLogin, Integer personalHistoryYear, String selfIntroduction, List<TechStack> techStacks, String links) {
+    public User(String sub, String email, String nickname, Position position, String affiliation, boolean isPublicAffiliation, boolean isFirstLogin, Integer personalHistoryYear, String selfIntroduction, List<TechStack> techStacks, String links, String picture) {
         this.sub = sub;
         this.email = email;
         this.nickname = nickname;
@@ -68,12 +71,23 @@ public class User {
         this.selfIntroduction = selfIntroduction;
         this.techStacks = techStacks;
         this.links = links;
+        this.picture = picture;
     }
 
-    public static User of(String sub, String email) {
+    public static User from(OidcUser oidcUser) {
+        return User.builder()
+                .sub(oidcUser.getSubject())
+                .email(oidcUser.getEmail())
+                .picture(oidcUser.getPicture())
+                .isFirstLogin(true)
+                .build();
+    }
+
+    public static User of(String sub, String email, String picture) {
         return User.builder()
                 .sub(sub)
                 .email(email)
+                .picture(picture)
                 .isFirstLogin(true)
                 .build();
     }
