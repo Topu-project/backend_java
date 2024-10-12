@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,15 @@ public class User {
         this.techStacks = techStacks;
         this.links = links;
         this.picture = picture;
+    }
+
+    public static User from(OidcUser oidcUser) {
+        return User.builder()
+                .sub(oidcUser.getSubject())
+                .email(oidcUser.getEmail())
+                .picture(oidcUser.getPicture())
+                .isFirstLogin(true)
+                .build();
     }
 
     public static User of(String sub, String email, String picture) {

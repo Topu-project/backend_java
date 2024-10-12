@@ -23,14 +23,9 @@ public class OidcAuthUsecase extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         var oidcUser = super.loadUser(userRequest);
 
-        // extract oidc user info
-        var sub = oidcUser.getSubject();
-        var email = oidcUser.getEmail();
-        var picture = oidcUser.getPicture();
-
         // check user
-        var foundUser = userRepository.findUserByEmail(email);
-        var user = foundUser.orElseGet(() -> userRepository.save(User.of(sub, email, picture)));
+        var foundUser = userRepository.findUserByEmail(oidcUser.getEmail());
+        var user = foundUser.orElseGet(() -> userRepository.save(User.from(oidcUser)));
 
         // create accessToken & refreshToken
         var accessToken = jwtUtil.generateToken(user.getUserId());
