@@ -50,10 +50,12 @@ public class User {
 
     private String picture;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "position_id")
     private Position position;
 
     @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_id")
     private List<TechStack> techStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
