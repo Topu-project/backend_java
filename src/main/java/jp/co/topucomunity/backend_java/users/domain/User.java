@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jp.co.topucomunity.backend_java.recruitments.domain.Position;
 import jp.co.topucomunity.backend_java.recruitments.domain.RecruitmentUser;
 import jp.co.topucomunity.backend_java.recruitments.domain.TechStack;
+import jp.co.topucomunity.backend_java.users.application.port.out.SignupUser;
 import jp.co.topucomunity.backend_java.users.usecase.in.RegisterUser;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -115,5 +116,14 @@ public class User {
         this.techStacks = registerUser.getTechStackNames().stream()
                 .map(TechStack::from)
                 .toList();
+    }
+
+    public void updateFirstLoginUser(SignupUser signupUser) {
+        this.nickname = signupUser.getNickname();
+        this.position = signupUser.getPosition();
+        this.personalHistoryYear = signupUser.getPersonalHistoryYear();
+        this.isPublicAffiliation = false;
+        this.isFirstLogin = false;
+        this.techStacks = signupUser.getTechStacks();
     }
 }
